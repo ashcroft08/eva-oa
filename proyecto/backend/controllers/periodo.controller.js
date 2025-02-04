@@ -1,4 +1,5 @@
-import { Periodo } from "../models/Periodo";
+import { Periodo } from "../models/Periodo.js";
+import { Op } from 'sequelize';
 
 /**
  * Obtiene todos los periodos.
@@ -66,6 +67,9 @@ export const createPeriodo = async (req, res) => {
 
         return res.status(201).json(newPeriodo);
     } catch (error) {
+        // Imprimir el error en la consola
+        console.error('Error al crear el periodo:', error);
+
         return res.status(500).json({ message: error.message });
     }
 };

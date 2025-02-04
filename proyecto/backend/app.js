@@ -9,6 +9,7 @@ import institucionRoutes from './routes/institucion.routes.js';
 import userRoutes from "./routes/user.routes.js"
 import cursoRoutes from "./routes/curso.routes.js"
 import materiaRoutes from './routes/materia.routes.js';
+import periodoRoutes from './routes/periodo.routes.js';
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use('/api', institucionRoutes);
 app.use("/api", userRoutes);
 app.use("/api", cursoRoutes);
 app.use("/api", materiaRoutes);
+app.use("/api", periodoRoutes);
 
 //app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
