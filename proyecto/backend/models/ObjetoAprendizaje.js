@@ -12,7 +12,7 @@ export const ObjetoAprendizaje = sequelize.define('ObjetoAprendizaje', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'materias',
+            model: 'materia',
             key: 'cod_materia',
         },
     },
@@ -20,7 +20,7 @@ export const ObjetoAprendizaje = sequelize.define('ObjetoAprendizaje', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'usuarios',
+            model: 'usuario',
             key: 'cod_usuario',
         },
     },
@@ -47,7 +47,7 @@ export const ObjetoAprendizaje = sequelize.define('ObjetoAprendizaje', {
         type: DataTypes.DATE,
     },
 }, {
-    tableName: 'objetos_aprendizaje',
+    tableName: 'objeto_aprendizaje',
     timestamps: true,
 });
 

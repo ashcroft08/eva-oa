@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/database.js';
-import { MensajesWikis } from './MensajesWikis.js';
+import { MensajeWiki } from './MensajeWiki.js';
 
 export const Wiki = sequelize.define('Wiki', {
     cod_wiki: {
@@ -12,7 +12,7 @@ export const Wiki = sequelize.define('Wiki', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'materias',
+            model: 'materia',
             key: 'cod_materia',
         },
     },
@@ -20,7 +20,7 @@ export const Wiki = sequelize.define('Wiki', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'usuarios',
+            model: 'usuario',
             key: 'cod_usuario',
         },
     },
@@ -41,9 +41,9 @@ export const Wiki = sequelize.define('Wiki', {
         type: DataTypes.INTEGER,
     },
 }, {
-    tableName: 'wikis',
+    tableName: 'wiki',
     timestamps: true,
 });
 
-Wiki.hasMany(MensajesWikis, { foreignKey: 'cod_wiki' });
-MensajesWikis.belongsTo(Wiki, { foreignKey: 'cod_wiki' });
+Wiki.hasMany(MensajeWiki, { foreignKey: 'cod_wiki' });
+MensajeWiki.belongsTo(Wiki, { foreignKey: 'cod_wiki' });

@@ -139,9 +139,14 @@ export const RegisterTeacher = () => {
   };
 
   const handleConfirmDelete = async () => {
-    await deleteUser(currentUser.cod_usuario);
+    const success = await deleteUser(currentUser.cod_usuario); // Esperar a que deleteUser se complete
+    if (success) {
+      // Solo mostrar el mensaje de éxito si la eliminación fue exitosa
+      CustomToast("¡Docente eliminado exitosamente!", "success");
+      setDeleteVisible(false);
+      await getUsersTeacher();
+    }
     setDeleteVisible(false);
-    await getUsersTeacher();
   };
 
   const columns = [
@@ -216,6 +221,7 @@ export const RegisterTeacher = () => {
                 color="success"
                 style={{ color: "white" }}
                 onClick={() => setVisible(true)}
+                className="fw-bold"
               >
                 Crear nuevo docente
               </CButton>
@@ -223,16 +229,17 @@ export const RegisterTeacher = () => {
           </div>
         </CCardHeader>
         <CCardBody>
-          <div className="text-end">
-            <span>Buscar: </span>
-            <input
-              type="text"
-              onChange={handleFilter}
-              className="form-control"
-              style={{ display: "inline-block", width: "auto" }}
-            />
+          <div className="d-flex justify-content-end mb-2">
+            <div className="input-group" style={{ width: "auto" }}>
+              <span className="input-group-text">Buscar:</span>
+              <input
+                type="text"
+                onChange={handleFilter}
+                className="form-control"
+                style={{ minWidth: "150px", maxWidth: "250px" }} // Aumenta el ancho aquí
+              />
+            </div>
           </div>
-          <br />
           <DataTable
             columns={columns}
             data={records}
@@ -251,7 +258,7 @@ export const RegisterTeacher = () => {
         >
           <form onSubmit={handleSubmit(onSubmit)}>
             <CModalHeader>
-              <CModalTitle id="VerticallyCenteredExample">
+              <CModalTitle id="VerticallyCenteredExample" className="fw-bold">
                 Crear Docente
               </CModalTitle>
             </CModalHeader>
@@ -400,6 +407,7 @@ export const RegisterTeacher = () => {
           visible={editVisible}
           onClose={handleCloseEdit} // Usar el nuevo handler
           aria-labelledby="EditModal"
+          className="fw-bold"
         >
           <form onSubmit={handleSubmitEdit(onSubmitEdit)}>
             <CModalHeader>
@@ -482,7 +490,7 @@ export const RegisterTeacher = () => {
           aria-labelledby="DeleteUser Modal"
         >
           <CModalHeader>
-            <CModalTitle id="DeleteUser Modal">
+            <CModalTitle id="DeleteUser Modal" className="fw-bold">
               Confirmar Eliminación
             </CModalTitle>
           </CModalHeader>

@@ -13,7 +13,7 @@ export const Tarea = sequelize.define('Tarea', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'materias',
+            model: 'materia',
             key: 'cod_materia',
         },
     },
@@ -21,7 +21,7 @@ export const Tarea = sequelize.define('Tarea', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'usuarios',
+            model: 'usuario',
             key: 'cod_usuario',
         },
     },
@@ -42,7 +42,7 @@ export const Tarea = sequelize.define('Tarea', {
         type: DataTypes.INTEGER,
     },
 }, {
-    tableName: 'tareas',
+    tableName: 'tarea',
     timestamps: true,
 });
 

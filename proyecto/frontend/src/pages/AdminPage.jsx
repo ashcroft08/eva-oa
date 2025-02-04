@@ -4,15 +4,20 @@ import Dashboard from "../components/Dashboard";
 import { RegisterAdmin } from "../components/RegisterAdmin";
 import { RegisterStudent } from "../components/RegisterStudent";
 import { RegisterTeacher } from "../components/RegisterTeacher";
+import { RegisterCurso } from "../components/RegisterCurso";
+import { RegisterInstitucion } from "../components/RegisterInstitucion";
+import { RegisterMateria } from "../components/RegisterMateria";
+import EditPerfil from "../components/EditPerfil";
 
 const componentMap = {
   Dashboard: () => <Dashboard />,
+  Institución: () => <RegisterInstitucion />,
   Administradores: () => <RegisterAdmin />,
   Estudiantes: () => <RegisterStudent />,
   Docentes: () => <RegisterTeacher />, // Receive setErrors as a prop
-  Cursos: () => <div>Cursos Content</div>,
-  Materias: () => <div>Materias Content</div>,
-  Perfil: () => <div>Perfil Content</div>,
+  Cursos: () => <RegisterCurso />,
+  "Asignar materias": () => <RegisterMateria />,
+  Perfil: () => <EditPerfil />,
   "/": () => <div>Logout</div>,
 };
 

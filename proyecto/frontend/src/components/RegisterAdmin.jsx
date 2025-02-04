@@ -27,6 +27,7 @@ import CustomToast from "./ui/CustomToast";
 
 export const RegisterAdmin = () => {
   const { users, getUsersAdmin, getUser, updateUser, deleteUser } = useUser();
+  const { user } = useAuth();
   const [records, setRecords] = useState([]);
   const [visible, setVisible] = useState(false);
   const [deleteVisible, setDeleteVisible] = useState(false);
@@ -121,10 +122,12 @@ export const RegisterAdmin = () => {
   // Enviar edición
   const onSubmitEdit = async (values) => {
     try {
-      await updateUser(editUser.cod_usuario, values);
-      CustomToast("¡Administrador actualizado exitosamente!", "success");
-      setEditVisible(false);
-      await getUsersAdmin(); // Actualizar lista
+      const success = await updateUser(editUser.cod_usuario, values);
+      if (success) {
+        CustomToast("¡Administrador actualizado exitosamente!", "success");
+        setEditVisible(false);
+        await getUsersAdmin(); // Actualizar lista
+      }
     } catch (error) {
       CustomToast(
         error.response?.data?.message || "Error al actualizar",
@@ -139,9 +142,14 @@ export const RegisterAdmin = () => {
   };
 
   const handleConfirmDelete = async () => {
-    await deleteUser(currentUser.cod_usuario);
+    const success = await deleteUser(currentUser.cod_usuario); // Esperar a que deleteUser se complete
+    if (success) {
+      // Solo mostrar el mensaje de éxito si la eliminación fue exitosa
+      CustomToast("¡Administrador eliminado exitosamente!", "success");
+      setDeleteVisible(false);
+      await getUsersAdmin();
+    }
     setDeleteVisible(false);
-    await getUsersAdmin();
   };
 
   const columns = [
@@ -176,9 +184,12 @@ export const RegisterAdmin = () => {
           >
             <FaEdit />
           </CButton>
-          <CButton color="danger" onClick={() => handleDelete(row)}>
-            <FaTrash />
-          </CButton>
+          {/* Mostrar el botón de eliminar solo si el rol del usuario es 1 */}
+          {user?.cod_rol === 1 && ( // Usa && para condicionalmente renderizar
+            <CButton color="danger" onClick={() => handleDelete(row)}>
+              <FaTrash />
+            </CButton>
+          )}
         </div>
       ),
     },
@@ -216,6 +227,7 @@ export const RegisterAdmin = () => {
                 color="success"
                 style={{ color: "white" }}
                 onClick={() => setVisible(true)}
+                className="fw-bold"
               >
                 Crear nuevo administrador
               </CButton>
@@ -223,16 +235,17 @@ export const RegisterAdmin = () => {
           </div>
         </CCardHeader>
         <CCardBody>
-          <div className="text-end">
-            <span>Buscar: </span>
-            <input
-              type="text"
-              onChange={handleFilter}
-              className="form-control"
-              style={{ display: "inline-block", width: "auto" }}
-            />
+          <div className="d-flex justify-content-end mb-2">
+            <div className="input-group" style={{ width: "auto" }}>
+              <span className="input-group-text">Buscar:</span>
+              <input
+                type="text"
+                onChange={handleFilter}
+                className="form-control"
+                style={{ minWidth: "150px", maxWidth: "250px" }} // Aumenta el ancho aquí
+              />
+            </div>
           </div>
-          <br />
           <DataTable
             columns={columns}
             data={records}
@@ -252,7 +265,7 @@ export const RegisterAdmin = () => {
         >
           <form onSubmit={handleSubmit(onSubmit)}>
             <CModalHeader>
-              <CModalTitle id="VerticallyCenteredExample">
+              <CModalTitle id="VerticallyCenteredExample" className="fw-bold">
                 Crear Administrador
               </CModalTitle>
             </CModalHeader>
@@ -402,7 +415,9 @@ export const RegisterAdmin = () => {
         >
           <form onSubmit={handleSubmitEdit(onSubmitEdit)}>
             <CModalHeader>
-              <CModalTitle>Editar Administrador</CModalTitle>
+              <CModalTitle className="fw-bold">
+                Editar Administrador
+              </CModalTitle>
             </CModalHeader>
             <CModalBody>
               <div className="mt-2">
@@ -481,7 +496,7 @@ export const RegisterAdmin = () => {
           aria-labelledby="DeleteUser Modal"
         >
           <CModalHeader>
-            <CModalTitle id="DeleteUser Modal">
+            <CModalTitle id="DeleteUser Modal" className="fw-bold">
               Confirmar Eliminación
             </CModalTitle>
           </CModalHeader>

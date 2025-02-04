@@ -6,6 +6,7 @@ import {
   getUserRequest,
   updateUserRequest,
   deleteUserRequest,
+  updatePasswordRequest,
 } from "../api/user";
 import CustomToast from "../components/ui/CustomToast";
 
@@ -19,6 +20,7 @@ export const useUser = () => {
 
 export function UserProvider({ children }) {
   const [users, setUsers] = useState([]);
+  const [errors, setErrors] = useState([]);
 
   const getUsersAdmin = async () => {
     try {
@@ -51,18 +53,18 @@ export function UserProvider({ children }) {
   const deleteUser = async (cod_usuario) => {
     try {
       const res = await deleteUserRequest(cod_usuario);
-      if (res.status === 204)
+      if (res.status === 204) {
         setUsers(users.filter((user) => user.cod_usuario != cod_usuario));
-      CustomToast("¡Administrador eliminado exitosamente!", "success");
+        return true; // Indicar éxito
+      }
+      return false; // Indicar fallo si no se cumple la condición
     } catch (error) {
-      // Si el error es de status 403, significa que no se puede eliminar al usuario logueado
-    if (error.response && error.response.status === 403) {
-      CustomToast("No se puede eliminar al usuario logueado.", "error");
-      //alert("No se puede eliminar al usuario logueado.");
-    } else {
-      console.log(error);
-      //toast.error("Hubo un error al intentar eliminar al administrador.");
-    }
+      if (error.response && error.response.status === 403) {
+        CustomToast("No se puede eliminar al usuario logueado.", "error");
+      } else {
+        console.log(error);
+      }
+      return false; // Indicar fallo en caso de error
     }
   };
 
@@ -78,10 +80,30 @@ export function UserProvider({ children }) {
 
   const updateUser = async (cod_usuario, user) => {
     try {
-      console.log(cod_usuario)
-      await updateUserRequest(cod_usuario, user);
+      //console.log(cod_usuario);
+      const res = await updateUserRequest(cod_usuario, user);
+      if (res.status === 201) {
+        return true; // Indicar éxito
+      }
+      return false; // Indicar fallo
     } catch (error) {
-      console.error(error);
+      console.error(error.response.data);
+      setErrors(error.response.data); // Cambia esto para que sea un array
+      return false; // Indicar fallo
+    }
+  };
+
+  const updatePassword = async (cod_usuario, user) => {
+    try {
+      const res = await updatePasswordRequest(cod_usuario, user);
+      if (res.status === 201) {
+        return true; // Indicar éxito
+      }
+      return false; // Indicar fallo
+    } catch (error) {
+      console.log(error.response.data);
+      setErrors(error.response.data); // Cambia esto para que sea un array
+      return false; // Indicar fallo
     }
   };
 
@@ -95,6 +117,8 @@ export function UserProvider({ children }) {
         getUser,
         updateUser,
         deleteUser,
+        updatePassword,
+        errors,
       }}
     >
       {children}

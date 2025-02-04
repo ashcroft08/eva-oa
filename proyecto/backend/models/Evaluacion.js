@@ -13,20 +13,20 @@ export const Evaluacion = sequelize.define('Evaluacion', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'materias',
+            model: 'materia',
             key: 'cod_materia',
         },
     },
-    cod_usuario: {
+    cod_profesor: {  // Nombre más descriptivo (FK a usuario con rol profesor)
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'usuarios',
+            model: 'usuario',
             key: 'cod_usuario',
         },
     },
     titulo: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100),
         allowNull: false,
     },
     descripcion: {
@@ -34,12 +34,21 @@ export const Evaluacion = sequelize.define('Evaluacion', {
     },
     fecha_apertura: {
         type: DataTypes.DATE,
+        allowNull: false,
     },
-    fecha_cierra: {
+    fecha_cierre: {  // Corrección de "cierra" a "cierre"
         type: DataTypes.DATE,
+        allowNull: false,
     },
+    duracion_minutos: {  // Nuevo campo importante
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+            min: 1
+        }
+    }
 }, {
-    tableName: 'evaluaciones',
+    tableName: 'evaluacion',
     timestamps: true,
 });
 

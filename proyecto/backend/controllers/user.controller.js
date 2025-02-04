@@ -1,4 +1,6 @@
+import { Op } from 'sequelize'; // Asegúrate de importar los operadores de Sequelize
 import { Usuario } from "../models/Usuario.js";
+import bcrypt from 'bcryptjs';
 
 export const getUser = async (req, res) => {
     try {
@@ -19,10 +21,16 @@ export const getUser = async (req, res) => {
 
 export const getUsersAdmin = async (req, res) => {
     try {
-        // Busca todos los usuarios con cod_rol igual a 1
+        // Obtener el ID del usuario logueado desde req.user
+        const userId = req.user.cod_usuario;
+
+        // Buscar todos los usuarios con cod_rol igual a 2, excluyendo al usuario logueado
         const admins = await Usuario.findAll({
             where: {
-                cod_rol: 2
+                cod_rol: 2,
+                cod_usuario: {
+                    [Op.ne]: userId // Excluir al usuario logueado
+                }
             }
         });
 
@@ -97,13 +105,6 @@ export const updateUser = async (req, res) => {
         const { cedula, nombres, apellidos, email } = req.body;
         const currentUserId = req.user.cod_usuario; // Usuario logueado (del token)
 
-        // Verificar si el usuario logueado intenta actualizar su propia cuenta
-        if (parseInt(cod_usuario) === currentUserId) {
-            return res.status(403).json({
-                message: "No puedes actualizar tu propia cuenta mientras estás logueado.",
-            });
-        }
-
         // Buscar al usuario por su código
         const user = await Usuario.findByPk(cod_usuario);
         if (!user) {
@@ -135,7 +136,7 @@ export const updateUser = async (req, res) => {
         await user.update(updates);
 
         // Responder con los datos actualizados
-        res.status(200).json({
+        res.status(201).json({
             cod_usuario: user.cod_usuario,
             cod_rol: user.cod_rol, // No se actualiza, pero se incluye en la respuesta
             cedula: user.cedula,
@@ -150,4 +151,52 @@ export const updateUser = async (req, res) => {
     }
 };
 
+export const updateUserPassword = async (req, res) => {
+    try {
+        const { cod_usuario } = req.params; // Código del usuario
+        const { currentPassword, newPassword, confirmPassword } = req.body;
 
+        // Validar que las nuevas contraseñas coincidan
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ message: "Las contraseñas no coinciden." });
+        }
+
+        // Validar la longitud de la nueva contraseña
+        if (newPassword.length < 8) {
+            return res.status(400).json({ message: "La contraseña debe tener al menos 8 caracteres." });
+        }
+
+        // Buscar al usuario por su código
+        const user = await Usuario.findByPk(cod_usuario);
+        if (!user) {
+            return res.status(404).json({ message: "Usuario no encontrado." });
+        }
+
+        // Verificar la contraseña actual
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Contraseña incorrecta. Intente de nuevo." });
+        }
+
+        // Verificar que la nueva contraseña no sea igual a la actual
+        const isNewPasswordSame = await bcrypt.compare(newPassword, user.password);
+        if (isNewPasswordSame) {
+            return res.status(400).json(["La nueva contraseña no puede ser igual a la actual."]);
+        }
+
+        // Hashear la nueva contraseña
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Actualizar la contraseña del usuario
+        await user.update({ password: hashedPassword });
+
+        // Responder con un mensaje de éxito
+        res.status(201).json({
+            cod_usuario: user.cod_usuario,
+            message: "Contraseña actualizada correctamente.",
+        });
+    } catch (error) {
+        console.error("Error en updateUserPassword:", error); // Imprime el error en la consola
+        res.status(500).json({ message: "Error al actualizar la contraseña. Por favor, inténtelo de nuevo." });
+    }
+};

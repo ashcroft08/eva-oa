@@ -11,7 +11,7 @@ export const RealizacionObjetoAprendizaje = sequelize.define('RealizacionObjetoA
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'objetos_aprendizaje',
+            model: 'objeto_aprendizaje',
             key: 'cod_oa',
         },
     },
@@ -19,7 +19,7 @@ export const RealizacionObjetoAprendizaje = sequelize.define('RealizacionObjetoA
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'materias',
+            model: 'materia',
             key: 'cod_materia',
         },
     },
@@ -27,7 +27,7 @@ export const RealizacionObjetoAprendizaje = sequelize.define('RealizacionObjetoA
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'usuarios',
+            model: 'usuario',
             key: 'cod_usuario',
         },
     },
@@ -45,6 +45,6 @@ export const RealizacionObjetoAprendizaje = sequelize.define('RealizacionObjetoA
         type: DataTypes.INTEGER,
     },
 }, {
-    tableName: 'realizacion_objetos_aprendizaje',
+    tableName: 'realizacion_objeto_aprendizaje',
     timestamps: true,
 });

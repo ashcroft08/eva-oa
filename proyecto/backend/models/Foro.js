@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/database.js';
-import { MensajesForo } from './MensajesForo.js';
+import { MensajeForo } from './MensajeForo.js';
 
 export const Foro = sequelize.define('Foro', {
     cod_foro: {
@@ -12,7 +12,7 @@ export const Foro = sequelize.define('Foro', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'materias',
+            model: 'materia',
             key: 'cod_materia',
         },
     },
@@ -20,7 +20,7 @@ export const Foro = sequelize.define('Foro', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'usuarios',
+            model: 'usuario',
             key: 'cod_usuario',
         },
     },
@@ -42,10 +42,10 @@ export const Foro = sequelize.define('Foro', {
         type: DataTypes.INTEGER,
     },
 }, {
-    tableName: 'foros',
+    tableName: 'foro',
     timestamps: true,
 });
 
 //Relaciones
-Foro.hasMany(MensajesForo, { foreignKey: 'cod_foro' });
-MensajesForo.belongsTo(Foro, { foreignKey: 'cod_foro' });
+Foro.hasMany(MensajeForo, { foreignKey: 'cod_foro' });
+MensajeForo.belongsTo(Foro, { foreignKey: 'cod_foro' });

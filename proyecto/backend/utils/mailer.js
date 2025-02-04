@@ -4,8 +4,8 @@ import nodemailer from 'nodemailer';
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'johangracia40@gmail.com',  // Tu correo de Gmail
-        pass: 'kjhs sdik fwos xhqi' // Tu contraseña de la cuenta o una "App Password" de Gmail
+        user: 'ashcroft0898@gmail.com',  // Tu correo de Gmail
+        pass: 'xpvh grye kddu xnxk' // Tu contraseña de la cuenta o una "App Password" de Gmail
     }
 });
 
@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 export const sendEmail = async (email, subject, message) => {
     try {
         const mailOptions = {
-            from: 'johangracia40@gmail.com',  // Tu correo de Gmail
+            from: 'ashcroft0898@gmail.com',  // Tu correo de Gmail
             to: email,                   // El correo de destino
             subject: subject,            // Asunto del correo
             html: message,               // Cuerpo del mensaje en formato HTML

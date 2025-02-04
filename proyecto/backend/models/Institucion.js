@@ -17,7 +17,7 @@ export const Institucion = sequelize.define('Institucion', {
     },
 }, {
     tableName: 'institucion', // Asegúrate de que coincida con el nombre en tu BD
-    timestamps: false, // Desactiva createdAt y updatedAt
+    timestamps: true, // Desactiva createdAt y updatedAt
 });
 
 // Si necesitas relaciones, agrégalas aquí

@@ -1,19 +1,20 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/database.js';
-import { Role } from './Role.js'; // Importar Role antes de las relaciones
+import { Rol } from './Rol.js'; // Importar Rol antes de las relaciones
 import { Matricula } from './Matricula.js';
 import { Materia } from './Materia.js';
 import { ObjetoAprendizaje } from './ObjetoAprendizaje.js';
 import { Tarea } from './Tarea.js';
 import { Foro } from './Foro.js';
-import { MensajesForo } from './MensajesForo.js';
+import { MensajeForo } from './MensajeForo.js';
 import { Evaluacion } from './Evaluacion.js';
 import { EntregaTarea } from './EntregaTarea.js';
 import { Wiki } from './Wiki.js';
-import { MensajesWikis } from './MensajesWikis.js';
+import { MensajeWiki } from './MensajeWiki.js';
 import { Progreso } from './Progreso.js';
 import { Resultado } from './Resultado.js';
 import { RealizacionObjetoAprendizaje } from './RealizacionObjetoAprendizaje.js';
+import { ProfesorMateria } from "./ProfesorMateria.js"
 import bcrypt from 'bcrypt'; // Asegúrate de instalar bcrypt
 
 export const Usuario = sequelize.define('Usuario', {
@@ -26,7 +27,7 @@ export const Usuario = sequelize.define('Usuario', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'roles', // Hace referencia directamente al modelo Role
+            model: 'rol', // Hace referencia directamente al modelo Rol
             key: 'cod_rol', // Clave referenciada
         },
     },
@@ -65,13 +66,15 @@ export const Usuario = sequelize.define('Usuario', {
         allowNull: true, // Puede ser nulo si no está bloqueado
     },
 }, {
-    tableName: 'usuarios', // Nombre explícito de la tabla
+    tableName: 'usuario', // Nombre explícito de la tabla
     timestamps: true, // Para manejar createdAt y updatedAt automáticamente
 });
 
 // Relaciones
 Usuario.hasMany(Matricula, { foreignKey: 'cod_usuario' });
 Matricula.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
+
+ProfesorMateria.belongsTo(Usuario, { foreignKey: 'cod_profesor' });
 
 Usuario.hasMany(Materia, { foreignKey: 'cod_usuario' });
 Materia.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
@@ -85,8 +88,8 @@ Tarea.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
 Usuario.hasMany(Foro, { foreignKey: 'cod_usuario' });
 Foro.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
 
-Usuario.hasMany(MensajesForo, { foreignKey: 'cod_usuario' });
-MensajesForo.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
+Usuario.hasMany(MensajeForo, { foreignKey: 'cod_usuario' });
+MensajeForo.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
 
 Usuario.hasMany(Evaluacion, { foreignKey: 'cod_usuario' });
 Evaluacion.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
@@ -97,8 +100,8 @@ EntregaTarea.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
 Usuario.hasMany(Wiki, { foreignKey: 'cod_usuario' });
 Wiki.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
 
-Usuario.hasMany(MensajesWikis, { foreignKey: 'cod_usuario' });
-MensajesWikis.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
+Usuario.hasMany(MensajeWiki, { foreignKey: 'cod_usuario' });
+MensajeWiki.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
 
 Usuario.hasMany(Progreso, { foreignKey: 'cod_usuario' });
 Progreso.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
@@ -109,24 +112,27 @@ Resultado.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
 Usuario.hasMany(RealizacionObjetoAprendizaje, { foreignKey: 'cod_usuario' });
 RealizacionObjetoAprendizaje.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
 
-// Hook para crear un superusuario inicial
+// Hook para crear un superusuario inicial (si no existe)
 Usuario.afterSync(async () => {
-    const superRole = await Role.findOne({ where: { nombre_rol: 'Superusuario' } });
-    if (superRole) {
-        const [usuario, created] = await Usuario.findOrCreate({
-            where: { email: 'admin@gmail.com' },
-            defaults: {
-                cod_rol: superRole.cod_rol,
+    const superRol = await Rol.findOne({ where: { nombre_rol: 'Superusuario' } });
+    if (superRol) {
+        // Verificar si ya existe un usuario con el rol de Superusuario
+        const existingUser = await Usuario.findOne({ where: { cod_rol: superRol.cod_rol } });
+
+        if (!existingUser) {
+            // Si no existe, crear el superusuario
+            const usuario = await Usuario.create({
+                cod_rol: superRol.cod_rol,
                 cedula: '1234567890',
                 nombres: 'Administrador',
                 apellidos: 'Sistema',
+                email: 'admin@gmail.com',
                 password: await bcrypt.hash('Admin08_*', 10), // Encriptar la contraseña
-            },
-        });
-        if (created) {
+            });
+
             console.log('Superusuario creado:', usuario.toJSON());
         } else {
-            console.log('Superusuario ya existe.');
+            console.log('Superusuario ya existe. No se realizaron cambios.');
         }
     } else {
         console.error('Rol Superusuario no encontrado.');

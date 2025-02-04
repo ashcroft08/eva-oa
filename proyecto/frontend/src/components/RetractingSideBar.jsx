@@ -11,7 +11,7 @@ import { RiAdminLine } from "react-icons/ri";
 import { PiGraduationCap } from "react-icons/pi";
 import { useAuth } from "../context/AuthContext";
 import { GiTeacher } from "react-icons/gi";
-import { MdOutlineGeneratingTokens } from "react-icons/md";
+import { LuCalendarClock } from "react-icons/lu";
 import { BiSolidInstitution } from "react-icons/bi";
 
 const RetractingSideBar = ({ setComponent }) => {
@@ -94,15 +94,15 @@ const RetractingSideBar = ({ setComponent }) => {
           open={open}
         />
         <Option
-          Icon={PiGraduationCap}
-          title="Matricular estudiantes"
+          Icon={LuCalendarClock}
+          title="Periodos"
           selected={selected}
           setSelected={handleComponentChange}
           open={open}
         />
         <Option
-          Icon={MdOutlineGeneratingTokens}
-          title="Expiración token"
+          Icon={PiGraduationCap}
+          title="Matricular estudiantes"
           selected={selected}
           setSelected={handleComponentChange}
           open={open}
@@ -110,7 +110,7 @@ const RetractingSideBar = ({ setComponent }) => {
       </div>
 
       {/* Aquí es donde añades un espacio entre las opciones */}
-      <div className="mt-12">
+      <div className="mt-4 md:mt-20 px-2 pb-4 space-y-2 md:space-y-1">
         <Option
           Icon={CgProfile}
           title="Perfil"
@@ -232,7 +232,7 @@ const TitleSection = ({ open, user }) => {
               </span>
 
               <span className="block text-xs text-slate-500">
-                Administrador
+                {user?.cod_rol === 1 ? "Superusuario" : "Administrador"}
               </span>
             </motion.div>
           )}

@@ -6,7 +6,7 @@ import { cursoSchema } from "../schemas/curso.schema.js";
 
 const router = Router();
 
-router.post("/curso", authRequired, validateSchema(cursoSchema), createCurso);
+router.post("/register-curso", authRequired, validateSchema(cursoSchema), createCurso);
 
 router.get("/cursos", authRequired, getCursos);
 

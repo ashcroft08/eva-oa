@@ -11,7 +11,7 @@ export const EntregaTarea = sequelize.define('EntregaTarea', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'tareas',
+            model: 'tarea',
             key: 'cod_tarea',
         },
     },
@@ -19,7 +19,7 @@ export const EntregaTarea = sequelize.define('EntregaTarea', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'usuarios',
+            model: 'usuario',
             key: 'cod_usuario',
         },
     },
@@ -39,6 +39,6 @@ export const EntregaTarea = sequelize.define('EntregaTarea', {
         type: DataTypes.TEXT,
     },
 }, {
-    tableName: 'entregas_tareas',
+    tableName: 'entrega_tarea',
     timestamps: true,
 });

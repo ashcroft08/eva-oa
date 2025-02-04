@@ -1,4 +1,5 @@
 import { Curso } from "../models/Curso.js";
+import { Op } from 'sequelize';
 
 export const getCursos = async (req, res) => {
     try {
@@ -15,10 +16,11 @@ export const createCurso = async (req, res) => {
         const { nombre_curso, paralelo } = req.body;
 
         // Verificar si ya existe un curso con el mismo paralelo
-        const existingCurso = await Curso.findOne({ where: { paralelo } });
+        const existingCurso = await Curso.findOne({ where: { nombre_curso } });
+        const existingParalelo = await Curso.findOne({ where: { paralelo } });
 
-        if (existingCurso) {
-            return res.status(400).json({ message: 'Ya existe un curso con el mismo paralelo.' });
+        if (existingCurso && existingParalelo) {
+            return res.status(400).json(['Ya existe el curso con el mismo paralelo.']);
         }
 
         // Si no existe, crear el nuevo curso
@@ -62,6 +64,18 @@ export const updateCurso = async (req, res) => {
             return res.status(404).json({ message: 'Curso no encontrado.' });
         }
 
+        // Verificar si ya existe un curso con el mismo paralelo, excluyendo el curso actual
+        const existingCurso = await Curso.findOne({
+            where: {
+                paralelo,
+                cod_curso: { [Op.ne]: cod_curso } // Excluye el curso actual
+            }
+        });
+
+        if (existingCurso) {
+            return res.status(400).json(['Ya existe el curso con el mismo paralelo.']);
+        }
+
         // Actualizar el curso
         curso.nombre_curso = nombre_curso;
         curso.paralelo = paralelo;
@@ -77,14 +91,19 @@ export const getCurso = async (req, res) => {
     try {
         const { cod_curso } = req.params;
 
-        // Buscar el curso por cod_curso
+        // Asegúrate que el modelo tenga cod_curso como PK
         const curso = await Curso.findByPk(cod_curso);
+
         if (!curso) {
-            return res.status(404).json({ message: 'Curso no encontrado.' });
+            return res.status(404).json({ message: 'Curso no encontrado' });
         }
 
-        return res.status(200).json(curso);
+        return res.json(curso);
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+        console.error("Error en getCurso:", error); // Agrega logging
+        return res.status(500).json({
+            message: 'Error interno del servidor',
+            error: error.message // Muestra el error real
+        });
     }
 };

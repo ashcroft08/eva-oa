@@ -18,7 +18,7 @@ export const Curso = sequelize.define('Curso', {
         allowNull: false,
     },
 }, {
-    tableName: 'cursos',
+    tableName: 'curso',
     timestamps: true,
 });
 

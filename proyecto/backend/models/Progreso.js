@@ -11,7 +11,7 @@ export const Progreso = sequelize.define('Progreso', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'usuarios',
+            model: 'usuario',
             key: 'cod_usuario',
         },
     },
@@ -19,7 +19,7 @@ export const Progreso = sequelize.define('Progreso', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'materias',
+            model: 'materia',
             key: 'cod_materia',
         },
     },
@@ -31,6 +31,6 @@ export const Progreso = sequelize.define('Progreso', {
         type: DataTypes.DATE,
     },
 }, {
-    tableName: 'progresos',
+    tableName: 'progreso',
     timestamps: true,
 });

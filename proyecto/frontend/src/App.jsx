@@ -13,72 +13,78 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import { UserProvider } from "./context/UserContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CursoProvider } from "./context/CursoContext";
+import { InstitucionProvider } from "./context/InstitucionContext";
 
 function App() {
   return (
     <>
       <AuthProvider>
         <UserProvider>
-          <BrowserRouter>
-            <RecoverPasswordProvider>
-              <Routes>
-                {/* Rutas públicas */}
-                <Route
-                  path="/"
-                  element={
-                    <PublicRoute>
-                      <h1>Home Page</h1>
-                    </PublicRoute>
-                  }
-                />
-                <Route
-                  path="/login"
-                  element={
-                    <PublicRoute>
-                      <LoginPage />
-                    </PublicRoute>
-                  }
-                />
-                <Route
-                  path="/recoverpassword"
-                  element={
-                    <PublicRoute>
-                      <RecoverPasswordPage />
-                    </PublicRoute>
-                  }
-                />
-                <Route
-                  path="/validate-recovery-code"
-                  element={
-                    <PublicRoute>
-                      <OTPInputPage />
-                    </PublicRoute>
-                  }
-                />
-                <Route
-                  path="/reset-password"
-                  element={
-                    <PublicRoute>
-                      <ResetPasswordPage />
-                    </PublicRoute>
-                  }
-                />
+          <InstitucionProvider>
+            <CursoProvider>
+              <BrowserRouter>
+                <RecoverPasswordProvider>
+                  <Routes>
+                    {/* Rutas públicas */}
+                    <Route
+                      path="/"
+                      element={
+                        <PublicRoute>
+                          <h1>Home Page</h1>
+                        </PublicRoute>
+                      }
+                    />
+                    <Route
+                      path="/login"
+                      element={
+                        <PublicRoute>
+                          <LoginPage />
+                        </PublicRoute>
+                      }
+                    />
+                    <Route
+                      path="/recoverpassword"
+                      element={
+                        <PublicRoute>
+                          <RecoverPasswordPage />
+                        </PublicRoute>
+                      }
+                    />
+                    <Route
+                      path="/validate-recovery-code"
+                      element={
+                        <PublicRoute>
+                          <OTPInputPage />
+                        </PublicRoute>
+                      }
+                    />
+                    <Route
+                      path="/reset-password"
+                      element={
+                        <PublicRoute>
+                          <ResetPasswordPage />
+                        </PublicRoute>
+                      }
+                    />
 
-                {/* Rutas protegidas */}
-                <Route element={<ProtectedRoute roles={[1, 2]} />}>
-                  <Route path="/admin" element={<AdminPage />} />
-                </Route>
+                    {/* Rutas protegidas */}
+                    <Route element={<ProtectedRoute roles={[1, 2]} />}>
+                      <Route path="/admin" element={<AdminPage />} />
+                    </Route>
 
-                <Route element={<ProtectedRoute roles={[3]} />}>
-                  <Route path="/teacher" element={<TeacherPage />} />
-                </Route>
+                    <Route element={<ProtectedRoute roles={[3]} />}>
+                      <Route path="/teacher" element={<TeacherPage />} />
+                    </Route>
 
-                <Route element={<ProtectedRoute roles={[4]} />}>
-                  <Route path="/student" element={<StudentPage />} />
-                </Route>
-              </Routes>
-            </RecoverPasswordProvider>
-          </BrowserRouter>
+                    <Route element={<ProtectedRoute roles={[4]} />}>
+                      <Route path="/student" element={<StudentPage />} />
+                    </Route>
+                  </Routes>
+                </RecoverPasswordProvider>
+              </BrowserRouter>
+            </CursoProvider>
+          </InstitucionProvider>
         </UserProvider>
       </AuthProvider>
       <ToastContainer />

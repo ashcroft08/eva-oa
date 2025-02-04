@@ -7,11 +7,19 @@ export const Matricula = sequelize.define('Matricula', {
         primaryKey: true,
         autoIncrement: true,
     },
+    cod_periodo: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'periodo', // Hace referencia directamente al modelo Periodo
+            key: 'cod_periodo', // Clave referenciada
+        },
+    },
     cod_curso: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'cursos',
+            model: 'curso',
             key: 'cod_curso',
         },
     },
@@ -19,23 +27,17 @@ export const Matricula = sequelize.define('Matricula', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'usuarios',
+            model: 'usuario',
             key: 'cod_usuario',
         },
     },
-    anio_lectivo: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    fecha_inicio: {
-        type: DataTypes.DATE,
-        allowNull: false,
-    },
-    fecha_fin: {
-        type: DataTypes.DATE,
-        allowNull: false,
-    },
 }, {
-    tableName: 'matriculas',
+    tableName: 'matricula',
     timestamps: true,
+    indexes: [
+        {
+            unique: true,
+            fields: ['cod_usuario', 'cod_curso','cod_periodo']
+        }
+    ]
 });

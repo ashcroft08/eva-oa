@@ -25,7 +25,7 @@ export const registerSchema = z.object({
     cod_rol: z.string({
         required_error: 'El rol es obligatorio',
     }),
-    cedula: z.string({
+    cedula: z.string().min(10, {
         required_error: 'La cédula es obligatoria',
     }).refine(validarCedula, {
         message: 'La cédula es inválida',
@@ -96,3 +96,31 @@ export const editSchema = z.object({
         message: 'Correo electrónico inválido',
     }),
 });
+
+//Esquema de contraseña
+export const passwordSchema = z.object({
+    currentPassword: z
+        .string({
+            required_error: 'La contraseña actual es obligatoria',
+        }),
+    newPassword: z
+        .string({
+            required_error: 'La nueva contraseña es obligatoria',
+        })
+        .min(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
+        .regex(/[A-Z]/, { message: 'Debe contener al menos una letra mayúscula' })
+        .regex(/[a-z]/, { message: 'Debe contener al menos una letra minúscula' })
+        .regex(/[0-9]/, { message: 'Debe contener al menos un número' })
+        .regex(/[\W_]/, { message: 'Debe contener al menos un carácter especial' }),
+    confirmPassword: z.string({
+        required_error: 'La confirmación es obligatoria',
+    }),
+})
+    .superRefine((data, ctx) => {
+        if (data.newPassword !== data.confirmPassword) {
+            ctx.addIssue({
+                path: ['confirmPassword'],
+                message: 'Las contraseñas no coinciden',
+            });
+        }
+    });

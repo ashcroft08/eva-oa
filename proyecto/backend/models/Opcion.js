@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/database.js';
+import { Emparejamiento } from './Emparejamiento.js';
 
 export const Opcion = sequelize.define('Opcion', {
     cod_opcion: {
@@ -11,19 +12,26 @@ export const Opcion = sequelize.define('Opcion', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'preguntas',
-            key: 'cod_preguntas',
+            model: 'pregunta',
+            key: 'cod_pregunta',
         },
     },
-    opcion: {
+    texto: {
         type: DataTypes.TEXT,
         allowNull: false,
     },
-    correcta: {
+    es_correcta: { // Para opción múltiple y verdadero/falso
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        defaultValue: false
     },
+    campo_emparejado: { // Para tipo "emparejar" (ej: "A-1", "B-2")
+        type: DataTypes.STRING,
+        allowNull: true,
+    }
 }, {
-    tableName: 'opciones',
+    tableName: 'opcion',
     timestamps: false,
 });
+
+Opcion.hasMany(Emparejamiento, { foreignKey: 'opcion_id' });
+Opcion.hasMany(Emparejamiento, { foreignKey: 'emparejado_id' });
