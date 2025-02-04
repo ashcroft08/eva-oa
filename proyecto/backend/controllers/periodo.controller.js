@@ -16,14 +16,14 @@ export const getPeriodos = async (req, res) => {
 };
 
 /**
- * Obtiene un periodo por su ID.
+ * Obtiene un periodo por su cod_periodo.
  * @param {Object} req - Objeto de solicitud de Express.
  * @param {Object} res - Objeto de respuesta de Express.
  */
 export const getPeriodo = async (req, res) => {
     try {
-        const { id } = req.params;
-        const periodo = await Periodo.findByPk(id);
+        const { cod_periodo } = req.params;
+        const periodo = await Periodo.findByPk(cod_periodo);
 
         if (!periodo) {
             return res.status(404).json({ message: 'Periodo no encontrado.' });
@@ -44,19 +44,39 @@ export const createPeriodo = async (req, res) => {
     try {
         const { anio_lectivo, fecha_inicio, fecha_fin } = req.body;
 
-        // Verificar si ya existe un periodo con el mismo año lectivo, fecha de inicio o fecha de fin
+        // Verificar si ya existe un periodo con los mismos datos (anio_lectivo, fecha_inicio, fecha_fin)
         const existingPeriodo = await Periodo.findOne({
             where: {
-                [Op.or]: [
-                    { anio_lectivo },
-                    { fecha_inicio },
-                    { fecha_fin }
-                ]
+                anio_lectivo,
+                fecha_inicio,
+                fecha_fin
             }
         });
 
         if (existingPeriodo) {
-            return res.status(400).json({ message: 'Ya existe un periodo con los mismos datos.' });
+            return res.status(400).json(['Ya existe un periodo con los mismos datos.']);
+        }
+
+        // Verificar si ya existe un periodo con las mismas fechas
+        const overlappingPeriodo = await Periodo.findOne({
+            where: {
+                [Op.and]: [
+                    {
+                        fecha_inicio: {
+                            [Op.lte]: fecha_fin // La fecha de inicio debe ser menor o igual a la fecha de fin
+                        }
+                    },
+                    {
+                        fecha_fin: {
+                            [Op.gte]: fecha_inicio // La fecha de fin debe ser mayor o igual a la fecha de inicio
+                        }
+                    }
+                ]
+            }
+        });
+
+        if (overlappingPeriodo) {
+            return res.status(400).json(['Ya hay un periodo registrado con esas fechas.']);
         }
 
         const newPeriodo = await Periodo.create({
@@ -67,10 +87,8 @@ export const createPeriodo = async (req, res) => {
 
         return res.status(201).json(newPeriodo);
     } catch (error) {
-        // Imprimir el error en la consola
         console.error('Error al crear el periodo:', error);
-
-        return res.status(500).json({ message: error.message });
+        return res.status(500).json(['Error interno del servidor']);
     }
 };
 
@@ -81,10 +99,10 @@ export const createPeriodo = async (req, res) => {
  */
 export const updatePeriodo = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { cod_periodo } = req.params;
         const { anio_lectivo, fecha_inicio, fecha_fin } = req.body;
 
-        const periodo = await Periodo.findByPk(id);
+        const periodo = await Periodo.findByPk(cod_periodo);
 
         if (!periodo) {
             return res.status(404).json({ message: 'Periodo no encontrado.' });
@@ -98,7 +116,7 @@ export const updatePeriodo = async (req, res) => {
                     { fecha_inicio },
                     { fecha_fin }
                 ],
-                id: { [Op.ne]: id } // Excluir el periodo actual de la verificación
+                cod_periodo: { [Op.ne]: cod_periodo } // Excluir el periodo actual de la verificación
             }
         });
 
@@ -125,9 +143,9 @@ export const updatePeriodo = async (req, res) => {
  */
 export const deletePeriodo = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { cod_periodo } = req.params;
 
-        const periodo = await Periodo.findByPk(id);
+        const periodo = await Periodo.findByPk(cod_periodo);
 
         if (!periodo) {
             return res.status(404).json({ message: 'Periodo no encontrado.' });

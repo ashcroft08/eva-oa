@@ -108,13 +108,13 @@ export function RegisterCurso() {
     }
   };
 
-  const handleDelete = (user) => {
-    setcurrentCurso(user);
+  const handleDelete = (curso) => {
+    setcurrentCurso(curso);
     setDeleteVisible(true);
   };
 
   const handleConfirmDelete = async () => {
-    const success = await deleteCurso(currentCurso.cod_curso); // Esperar a que deleteUser se complete
+    const success = await deleteCurso(currentCurso.cod_curso); // Esperar a que DeteleCurso se complete
     if (success) {
       // Solo mostrar el mensaje de éxito si la eliminación fue exitosa
       CustomToast("¡Curso eliminado exitosamente!", "success");
@@ -158,9 +158,8 @@ export function RegisterCurso() {
     const query = event.target.value.toLowerCase();
     const newData = cursos.filter((row) => {
       return (
-        row.nombres.toLowerCase().includes(query) ||
-        row.apellidos.toLowerCase().includes(query) ||
-        row.email.toLowerCase().includes(query)
+        row.nombre_curso.toLowerCase().includes(query) ||
+        row.paralelo.toLowerCase().includes(query)
       );
     });
     setRecords(newData);
@@ -301,10 +300,10 @@ export function RegisterCurso() {
           alignment="center"
           visible={deleteVisible}
           onClose={() => setDeleteVisible(false)}
-          aria-labelledby="DeleteUser Modal"
+          aria-labelledby="DeteleCurso Modal"
         >
           <CModalHeader>
-            <CModalTitle id="DeleteUser Modal" className="fw-bold">
+            <CModalTitle id="DeteleCurso Modal" className="fw-bold">
               Confirmar Eliminación
             </CModalTitle>
           </CModalHeader>
