@@ -25,7 +25,7 @@ export const registerSchema = z.object({
     cod_rol: z.string({
         required_error: 'El rol es obligatorio',
     }),
-    cedula: z.string().min(10, {
+    cedula: z.string().min(2,{
         required_error: 'La cédula es obligatoria',
     }).refine(validarCedula, {
         message: 'La cédula es inválida',
