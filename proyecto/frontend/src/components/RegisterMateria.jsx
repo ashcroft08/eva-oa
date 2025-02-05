@@ -12,16 +12,26 @@ import {
   CFormInput,
 } from "@coreui/react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod"; // Importar el resolver de zod
 import { FaPlus } from "react-icons/fa";
 import ListItem from "./ui/ListItem";
 import Label from "./ui/Label";
 import CustomToast from "./ui/CustomToast";
 import { useMateria } from "../context/MateriaContext";
 import { useCurso } from "../context/CursoContext";
+import { materiaSchema } from "../schemas/materia"; // Importar el esquema de zod
 
 export function RegisterMateria() {
-  const { cursos, getCursos } = useCurso();
-  const { register, handleSubmit, reset, setValue } = useForm();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors }, // Obtener los errores de validación
+  } = useForm({
+    resolver: zodResolver(materiaSchema), // Conectar zod con react-hook-form
+  });
+
   const [visible, setVisible] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
   const [deleteVisible, setDeleteVisible] = useState(false);
@@ -37,6 +47,7 @@ export function RegisterMateria() {
     deleteMateria,
     errors: registerErrors,
   } = useMateria();
+  const { cursos, getCursos } = useCurso();
 
   useEffect(() => {
     fetchData();
@@ -102,7 +113,7 @@ export function RegisterMateria() {
         setVisible(false);
       }
     } else {
-      CustomToast("Por favor, completa todos los campos", "error");
+      CustomToast("Por favor, ingrese una materia", "error");
     }
   }, [newSubjectName, selectedCurso, registerMateria, fetchData]);
 
@@ -122,7 +133,7 @@ export function RegisterMateria() {
           materiasPorCurso.map((curso) => (
             <CCard key={curso.cod_curso} style={{ width: "18rem" }}>
               <CCardHeader className="fw-bold text-center d-flex justify-content-between align-items-center">
-                {curso.nombre_curso}
+                {curso.nombre_curso} - {curso.paralelo}
                 <CButton
                   color="light"
                   onClick={() => {
@@ -183,6 +194,9 @@ export function RegisterMateria() {
           value={newSubjectName}
           onChange={(e) => setNewSubjectName(e.target.value)}
         />
+        {errors.nombre_materia && ( // Mostrar errores de validación
+          <p className="text-danger">{errors.nombre_materia.message}</p>
+        )}
       </CustomModal>
 
       {/* Modal para actualizar materia */}
@@ -203,7 +217,13 @@ export function RegisterMateria() {
       >
         <form onSubmit={handleSubmit(handleUpdateMateria)}>
           <Label htmlFor="nombre_materia">Nombre de la materia</Label>
-          <CFormInput {...register("nombre_materia")} required />
+          <CFormInput
+            {...register("nombre_materia")}
+            isInvalid={!!errors.nombre_materia} // Marcar como inválido si hay errores
+          />
+          {errors.nombre_materia && ( // Mostrar errores de validación
+            <p className="text-danger">{errors.nombre_materia.message}</p>
+          )}
         </form>
       </CustomModal>
 
