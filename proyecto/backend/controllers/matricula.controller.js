@@ -9,14 +9,14 @@ import { Op } from 'sequelize';
  */
 export const createMatricula = async (req, res) => {
     try {
-        const { cod_periodo, cod_curso, cod_usuario } = req.body;
+        const { cod_periodo, cod_curso, cod_estudiante } = req.body;
 
         // Verifica si la matrícula ya existe
         const existingMatricula = await Matricula.findOne({
             where: {
                 cod_periodo,
                 cod_curso,
-                cod_usuario,
+                cod_estudiante,
             }
         });
 
@@ -28,7 +28,7 @@ export const createMatricula = async (req, res) => {
         const newMatricula = await Matricula.create({
             cod_periodo,
             cod_curso,
-            cod_usuario,
+            cod_estudiante,
         });
 
         return res.status(201).json(newMatricula);
@@ -91,7 +91,7 @@ export const getMatriculas = async (req, res) => {
 export const updateMatricula = async (req, res) => {
     try {
         const { cod_matricula } = req.params;
-        const { cod_periodo, cod_curso, cod_usuario } = req.body;
+        const { cod_periodo, cod_curso, cod_estudiante } = req.body;
 
         const matricula = await Matricula.findByPk(cod_matricula);
 
@@ -102,7 +102,7 @@ export const updateMatricula = async (req, res) => {
         // Actualiza los campos de la matrícula
         matricula.cod_periodo = cod_periodo || matricula.cod_periodo;
         matricula.cod_curso = cod_curso || matricula.cod_curso;
-        matricula.cod_usuario = cod_usuario || matricula.cod_usuario;
+        matricula.cod_estudiante = cod_estudiante || matricula.cod_estudiante;
 
         await matricula.save();
 
