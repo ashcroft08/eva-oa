@@ -10,6 +10,7 @@ import { RegisterMateria } from "../components/RegisterMateria";
 import {AsignarMateria} from "../components/AsignarMateria";
 import { RegisterPeriodo } from "../components/RegisterPeriodo";
 import EditPerfil from "../components/EditPerfil";
+import {MatricularEstudiante} from "../components/MatricularEstudiante";
 
 const componentMap = {
   Dashboard: () => <Dashboard />,
@@ -21,6 +22,7 @@ const componentMap = {
   "Asignar materias": () => <RegisterMateria />,
   //"Asignar materias": () => <AsignarMateria />,
   Periodos: () => <RegisterPeriodo />,
+  "Matricular estudiantes": () => <MatricularEstudiante/>,
   Perfil: () => <EditPerfil />,
   "/": () => <div>Logout</div>,
 };
