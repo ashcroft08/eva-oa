@@ -23,7 +23,7 @@ export const RealizacionObjetoAprendizaje = sequelize.define('RealizacionObjetoA
             key: 'cod_materia',
         },
     },
-    cod_usuario: {
+    cod_estudiante: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {

@@ -37,7 +37,7 @@ export const Matricula = sequelize.define('Matricula', {
     indexes: [
         {
             unique: true,
-            fields: ['cod_usuario', 'cod_curso','cod_periodo']
+            fields: ['cod_estudiante', 'cod_curso','cod_periodo']
         }
     ]
 });

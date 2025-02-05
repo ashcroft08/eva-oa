@@ -7,7 +7,7 @@ export const Progreso = sequelize.define('Progreso', {
         primaryKey: true,
         autoIncrement: true,
     },
-    cod_usuario: {
+    cod_estudiante: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {

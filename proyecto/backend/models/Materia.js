@@ -47,9 +47,6 @@ Tarea.belongsTo(Materia, { foreignKey: 'cod_materia' });
 Materia.hasMany(Foro, { foreignKey: 'cod_materia' });
 Foro.belongsTo(Materia, { foreignKey: 'cod_materia' });
 
-Materia.hasMany(MensajeForo, { foreignKey: 'cod_materia' });
-MensajeForo.belongsTo(Materia, { foreignKey: 'cod_materia' });
-
 Materia.hasMany(Evaluacion, { foreignKey: 'cod_materia' });
 Evaluacion.belongsTo(Materia, { foreignKey: 'cod_materia' });
 
@@ -58,9 +55,6 @@ Wiki.belongsTo(Materia, { foreignKey: 'cod_materia' });
 
 Materia.hasMany(Progreso, { foreignKey: 'cod_materia' });
 Progreso.belongsTo(Materia, { foreignKey: 'cod_materia' });
-
-Materia.hasMany(Resultado, { foreignKey: 'cod_materia' });
-Resultado.belongsTo(Materia, { foreignKey: 'cod_materia' });
 
 Materia.hasMany(RealizacionObjetoAprendizaje, { foreignKey: 'cod_materia' });
 RealizacionObjetoAprendizaje.belongsTo(Materia, { foreignKey: 'cod_materia' });
