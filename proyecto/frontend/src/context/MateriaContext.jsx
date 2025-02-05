@@ -43,8 +43,10 @@ export function MateriaProvider({ children }) {
 
   const registerMateria = async (materia) => {
     try {
+      console.log(materia);
       const res = await registerMateriaRequest(materia);
       if (res.status === 201) {
+        console.log(res);
         //console.log("Usuario registrado exitosamente");
         return true; // Indicar éxito
       }

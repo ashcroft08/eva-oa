@@ -7,6 +7,7 @@ import { RegisterTeacher } from "../components/RegisterTeacher";
 import { RegisterCurso } from "../components/RegisterCurso";
 import { RegisterInstitucion } from "../components/RegisterInstitucion";
 import { RegisterMateria } from "../components/RegisterMateria";
+import {AsignarMateria} from "../components/AsignarMateria";
 import { RegisterPeriodo } from "../components/RegisterPeriodo";
 import EditPerfil from "../components/EditPerfil";
 
@@ -18,6 +19,7 @@ const componentMap = {
   Docentes: () => <RegisterTeacher />, // Receive setErrors as a prop
   Cursos: () => <RegisterCurso />,
   "Asignar materias": () => <RegisterMateria />,
+  //"Asignar materias": () => <AsignarMateria />,
   Periodos: () => <RegisterPeriodo />,
   Perfil: () => <EditPerfil />,
   "/": () => <div>Logout</div>,
