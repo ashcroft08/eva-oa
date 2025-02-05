@@ -14,7 +14,7 @@ import { MensajeWiki } from './MensajeWiki.js';
 import { Progreso } from './Progreso.js';
 import { Resultado } from './Resultado.js';
 import { RealizacionObjetoAprendizaje } from './RealizacionObjetoAprendizaje.js';
-import { ProfesorMateria } from "./ProfesorMateria.js"
+import { DocenteMateria } from "./DocenteMateria.js"
 import bcrypt from 'bcrypt'; // Asegúrate de instalar bcrypt
 
 export const Usuario = sequelize.define('Usuario', {
@@ -74,7 +74,7 @@ export const Usuario = sequelize.define('Usuario', {
 Usuario.hasMany(Matricula, { foreignKey: 'cod_usuario' });
 Matricula.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
 
-ProfesorMateria.belongsTo(Usuario, { foreignKey: 'cod_profesor' });
+DocenteMateria.belongsTo(Usuario, { foreignKey: 'cod_profesor' });
 
 Usuario.hasMany(Materia, { foreignKey: 'cod_usuario' });
 Materia.belongsTo(Usuario, { foreignKey: 'cod_usuario' });

@@ -23,7 +23,7 @@ export const Matricula = sequelize.define('Matricula', {
             key: 'cod_curso',
         },
     },
-    cod_usuario: {
+    cod_estudiante: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {

@@ -40,12 +40,15 @@ export const createMateria = async (req, res) => {
         }
 
         // Verificar si la materia ya existe en el mismo curso
-        if (materiaExistente) {
-            return res.status(400).json({ errors: ['La materia ya existe en este curso'] });
-        }
+        const materiaExistente = await Materia.findOne({
+            where: {
+                nombre_materia,
+                cod_curso
+            }
+        });
 
         if (materiaExistente) {
-            return res.status(400).json(['La materia ya existe en este curso']);
+            return res.status(400).json({ errors: ['La materia ya existe en este curso'] });
         }
 
         const nuevaMateria = await Materia.create({

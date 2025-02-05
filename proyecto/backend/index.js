@@ -3,11 +3,12 @@ import { sequelize } from './database/database.js';
 import { setupAssociations } from './associations.js';
 
 // Importa todos los modelos
-/*import './models/Usuario.js';
+import './models/Usuario.js';
 import './models/RecoverPassword.js';
 import './models/Rol.js';
 import './models/Curso.js';
 import './models/Materia.js';
+import './models/DocenteMateria.js'
 import './models/Periodo.js'
 import './models/Matricula.js';
 import './models/ObjetoAprendizaje.js';
@@ -23,13 +24,13 @@ import './models/MensajeWiki.js';
 import './models/Progreso.js';
 import './models/RealizacionObjetoAprendizaje.js';
 import './models/Resultado.js';
-import './models/Institucion.js';*/
+import './models/Institucion.js';
 
 async function main() {
     try {
         // Establece relaciones después de importar modelos
         setupAssociations();
-        await sequelize.sync({ force: false });
+        await sequelize.sync({ force: true });
         console.log("Base de datos sincronizada correctamente..");
         app.listen(4000);
         console.log("Server is listening on port", 4000);

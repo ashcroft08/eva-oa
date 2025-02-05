@@ -1,6 +1,5 @@
 import { Usuario } from './models/Usuario.js';
 import { Rol } from './models/Rol.js';
-import { Matricula } from './models/Matricula.js';
 // Importa todos los modelos necesarios...
 
 export const setupAssociations = () => {
