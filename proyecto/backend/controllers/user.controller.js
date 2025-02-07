@@ -33,7 +33,8 @@ export const getUsersAdmin = async (req, res) => {
                 cod_usuario: {
                     [Op.ne]: userId // Excluir al usuario logueado
                 }
-            }
+            },
+            order: [['cod_usuario', 'ASC']]
         });
 
         // Devuelve los usuarios encontrados en formato JSON
@@ -49,7 +50,8 @@ export const getUsersTeacher = async (req, res) => {
         const teachers = await Usuario.findAll({
             where: {
                 cod_rol: 3
-            }
+            },
+            order: [['cod_usuario', 'ASC']]
         });
         res.json(teachers);
     } catch (error) {
@@ -62,7 +64,8 @@ export const getUsersStudent = async (req, res) => {
         const students = await Usuario.findAll({
             where: {
                 cod_rol: 4
-            }
+            },
+            order: [['cod_usuario', 'ASC']]
         });
         res.json(students);
     } catch (error) {
@@ -72,30 +75,29 @@ export const getUsersStudent = async (req, res) => {
 
 export const getEstudiantesNoMatriculados = async (req, res) => {
     try {
+        // Obtener todos los estudiantes
         const estudiantes = await Usuario.findAll({
             where: {
-                cod_rol: 4, // Filtra solo los usuarios con rol de estudiante
-            },
-            include: [
-                {
-                    model: Matricula,
-                    where: {
-                        cod_estudiante: null, // Filtra los estudiantes no matriculados
-                    },
-                    required: false, // LEFT JOIN
-                },
-            ],
-            attributes: ["cod_usuario", "nombres", "apellidos"], // Selecciona solo el código de usuario
+                cod_rol: 4
+            }
         });
 
-        // Filtrar los resultados para obtener solo aquellos sin matrícula
-        const estudiantesNoMatriculados = estudiantes.filter(
-            (estudiante) => !estudiante.Matriculas || estudiante.Matriculas.length === 0
+        // Obtener los estudiantes que están matriculados en cualquier curso
+        const estudiantesMatriculados = await Matricula.findAll({
+            attributes: ['cod_estudiante']
+        });
+
+        // Extraer los IDs de los estudiantes matriculados
+        const codEstudiantesMatriculados = estudiantesMatriculados.map(m => m.cod_estudiante);
+
+        // Filtrar los estudiantes que no están matriculados en ningún curso
+        const estudiantesNoMatriculados = estudiantes.filter(estudiante =>
+            !codEstudiantesMatriculados.includes(estudiante.cod_usuario)
         );
 
-        res.json(estudiantesNoMatriculados);
+        return res.status(200).json(estudiantesNoMatriculados);
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: 'Error al obtener estudiantes no matriculados', error: error.message });
     }
 };
 

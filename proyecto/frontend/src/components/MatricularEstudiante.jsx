@@ -1,7 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { CFormSelect } from "@coreui/react";
-import Label from "./ui/Label";
-import { useForm } from "react-hook-form";
 import DataTable from "react-data-table-component";
 import { useCurso } from "../context/CursoContext";
 import { useUser } from "../context/UserContext";
@@ -12,7 +9,6 @@ export function MatricularEstudiante() {
   const { getEstudiantesNoMatriculados, users } = useUser();
   const { registerMatricula } = useMatricula();
   const hasFetchedCursos = useRef(false);
-  const { register, handleSubmit, reset } = useForm();
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [filterText, setFilterText] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
@@ -118,7 +114,7 @@ export function MatricularEstudiante() {
   ];
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6">
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-gray-800">
           Matricular Estudiantes
@@ -126,9 +122,6 @@ export function MatricularEstudiante() {
 
         {/* Selección de estudiantes */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold mb-4 text-gray-700">
-            Seleccionar Estudiantes
-          </h3>
           <div className="d-flex justify-content-end mb-2">
             <div className="input-group" style={{ width: "auto" }}>
               <span className="input-group-text">Buscar:</span>
@@ -163,6 +156,10 @@ export function MatricularEstudiante() {
               noDataComponent="No hay estudiantes disponibles"
               defaultSortField="nombres"
               defaultSortAsc
+              paginationComponentOptions={{
+                rowsPerPageText: "Filas por página:", // Texto para la opción de filas por página
+                rangeSeparatorText: "de", // Texto que separa el rango de filas
+              }}
             />
           </div>
         </div>
@@ -180,7 +177,7 @@ export function MatricularEstudiante() {
             <option value="">-- Selecciona un curso --</option>
             {cursos.map((curso) => (
               <option key={curso.cod_curso} value={curso.cod_curso}>
-                {curso.nombre_curso}
+                {curso.nombre_curso} - {curso.paralelo}
               </option>
             ))}
           </select>

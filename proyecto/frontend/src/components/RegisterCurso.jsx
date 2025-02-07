@@ -208,6 +208,8 @@ export function RegisterCurso() {
             columns={columns}
             data={records}
             pagination
+            paginationPerPage={5}
+            paginationRowsPerPageOptions={[5, 10, 15]}
             paginationComponentOptions={paginationComponentOptions}
             noDataComponent="No hay registros para mostrar"
           />

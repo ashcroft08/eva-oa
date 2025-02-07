@@ -12,14 +12,15 @@ import {
   CFormInput,
 } from "@coreui/react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod"; // Importar el resolver de zod
+import { zodResolver } from "@hookform/resolvers/zod";
 import { FaPlus } from "react-icons/fa";
+import ReactPaginate from "react-paginate";
 import ListItem from "./ui/ListItem";
 import Label from "./ui/Label";
 import CustomToast from "./ui/CustomToast";
 import { useMateria } from "../context/MateriaContext";
 import { useCurso } from "../context/CursoContext";
-import { materiaSchema } from "../schemas/materia"; // Importar el esquema de zod
+import { materiaSchema } from "../schemas/materia";
 
 export function RegisterMateria() {
   const {
@@ -27,9 +28,9 @@ export function RegisterMateria() {
     handleSubmit,
     reset,
     setValue,
-    formState: { errors }, // Obtener los errores de validación
+    formState: { errors },
   } = useForm({
-    resolver: zodResolver(materiaSchema), // Conectar zod con react-hook-form
+    resolver: zodResolver(materiaSchema),
   });
 
   const [visible, setVisible] = useState(false);
@@ -38,6 +39,8 @@ export function RegisterMateria() {
   const [currentMateria, setCurrentMateria] = useState(null);
   const [newSubjectName, setNewSubjectName] = useState("");
   const [selectedCurso, setSelectedCurso] = useState("");
+  const [currentPage, setCurrentPage] = useState(0); // Estado para la página actual
+  const itemsPerPage = 4; // Número de cursos por página
 
   const {
     materias,
@@ -126,51 +129,92 @@ export function RegisterMateria() {
     }));
   }, [cursos, materias]);
 
+  // Calcular los cursos a mostrar en la página actual
+  const pageCount = Math.ceil(materiasPorCurso.length / itemsPerPage);
+  const offset = currentPage * itemsPerPage;
+  const currentCursos = materiasPorCurso.slice(offset, offset + itemsPerPage);
+
+  // Manejar el cambio de página
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
   return (
     <>
-      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-        {materiasPorCurso.length > 0 ? (
-          materiasPorCurso.map((curso) => (
-            <CCard key={curso.cod_curso} style={{ width: "18rem" }}>
-              <CCardHeader className="fw-bold text-center d-flex justify-content-between align-items-center">
-                {curso.nombre_curso} - {curso.paralelo}
-                <CButton
-                  color="light"
-                  onClick={() => {
-                    setSelectedCurso(curso.cod_curso);
-                    setVisible(true);
-                  }}
-                >
-                  <FaPlus style={{ color: "green" }} />
-                </CButton>
-              </CCardHeader>
-              <CListGroup flush>
-                {curso.materias.map((materia) => (
-                  <ListItem
-                    key={materia.cod_materia}
-                    title={materia.nombre_materia}
-                    onEdit={() => {
-                      setCurrentMateria(materia);
-                      setEditVisible(true);
-                      setValue("nombre_materia", materia.nombre_materia);
-                      setValue("cod_curso", materia.cod_curso);
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
+          Registrar Materias
+        </h2>
+        <div
+          style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}
+          className="justify-center"
+        >
+          {currentCursos.length > 0 ? (
+            currentCursos.map((curso) => (
+              <CCard key={curso.cod_curso} style={{ width: "18rem" }}>
+                <CCardHeader className="fw-bold text-center d-flex justify-content-between align-items-center">
+                  {curso.nombre_curso} - {curso.paralelo}
+                  <CButton
+                    color="light"
+                    onClick={() => {
+                      setSelectedCurso(curso.cod_curso);
+                      setVisible(true);
                     }}
-                    onDelete={() => confirmDeleteMateria(materia)}
-                  />
-                ))}
-              </CListGroup>
-            </CCard>
-          ))
-        ) : (
-          <p>No hay cursos disponibles.</p>
-        )}
+                  >
+                    <FaPlus style={{ color: "green" }} />
+                  </CButton>
+                </CCardHeader>
+                <CListGroup flush>
+                  {curso.materias.map((materia) => (
+                    <ListItem
+                      key={materia.cod_materia}
+                      title={materia.nombre_materia}
+                      onEdit={() => {
+                        setCurrentMateria(materia);
+                        setEditVisible(true);
+                        setValue("nombre_materia", materia.nombre_materia);
+                        setValue("cod_curso", materia.cod_curso);
+                      }}
+                      onDelete={() => confirmDeleteMateria(materia)}
+                    />
+                  ))}
+                </CListGroup>
+              </CCard>
+            ))
+          ) : (
+            <p>No hay cursos disponibles.</p>
+          )}
+        </div>
+
+        {/* Paginación */}
+        <div className="d-flex justify-content-center mt-4">
+          <ReactPaginate
+            previousLabel={"Anterior"}
+            nextLabel={"Siguiente"}
+            breakLabel={"..."}
+            pageCount={pageCount}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={5}
+            onPageChange={handlePageClick}
+            containerClassName={"pagination"}
+            activeClassName={"active"}
+            pageClassName={"page-item"}
+            pageLinkClassName={"page-link"}
+            previousClassName={"page-item"}
+            previousLinkClassName={"page-link"}
+            nextClassName={"page-item"}
+            nextLinkClassName={"page-link"}
+            breakClassName={"page-item"}
+            breakLinkClassName={"page-link"}
+          />
+        </div>
       </div>
 
-      {/* Modal para agregar materia */}
+      {/* Modales (sin cambios) */}
       <CustomModal
         visible={visible}
         onClose={() => setVisible(false)}
-        title="Agregar Nueva Materia"
+        title="Agregar nueva materia"
         footer={
           <>
             <CButton color="secondary" onClick={() => setVisible(false)}>
@@ -194,12 +238,11 @@ export function RegisterMateria() {
           value={newSubjectName}
           onChange={(e) => setNewSubjectName(e.target.value)}
         />
-        {errors.nombre_materia && ( // Mostrar errores de validación
+        {errors.nombre_materia && (
           <p className="text-danger">{errors.nombre_materia.message}</p>
         )}
       </CustomModal>
 
-      {/* Modal para actualizar materia */}
       <CustomModal
         visible={editVisible}
         onClose={() => setEditVisible(false)}
@@ -219,15 +262,14 @@ export function RegisterMateria() {
           <Label htmlFor="nombre_materia">Nombre de la materia</Label>
           <CFormInput
             {...register("nombre_materia")}
-            isInvalid={!!errors.nombre_materia} // Marcar como inválido si hay errores
+            isInvalid={!!errors.nombre_materia}
           />
-          {errors.nombre_materia && ( // Mostrar errores de validación
+          {errors.nombre_materia && (
             <p className="text-danger">{errors.nombre_materia.message}</p>
           )}
         </form>
       </CustomModal>
 
-      {/* Modal de confirmación para eliminar materia */}
       <CustomModal
         visible={deleteVisible}
         onClose={() => setDeleteVisible(false)}

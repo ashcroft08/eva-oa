@@ -3,8 +3,10 @@ import { Op } from 'sequelize';
 
 export const getCursos = async (req, res) => {
     try {
-        // Obtener todos los cursos
-        const cursos = await Curso.findAll();
+        // Obtener todos los cursos ordenados por cod_curso de forma ascendente
+        const cursos = await Curso.findAll({
+            order: [['cod_curso', 'ASC']] // Ordenar por cod_curso en orden ascendente
+        });
         return res.status(200).json(cursos);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -65,14 +67,21 @@ export const updateCurso = async (req, res) => {
         }
 
         // Verificar si ya existe un curso con el mismo paralelo, excluyendo el curso actual
-        const existingCurso = await Curso.findOne({
+        const existingParalelo = await Curso.findOne({
             where: {
                 paralelo,
                 cod_curso: { [Op.ne]: cod_curso } // Excluye el curso actual
             }
         });
 
-        if (existingCurso) {
+        const existingCurso = await Curso.findOne({
+            where: {
+                nombre_curso,
+                cod_curso: { [Op.ne]: cod_curso } // Excluye el curso actual
+            }
+        });
+
+        if (existingCurso && existingParalelo) {
             return res.status(400).json(['Ya existe el curso con el mismo paralelo.']);
         }
 
