@@ -1,7 +1,7 @@
 /*import Sequelize from 'sequelize'
 
 // Option 3: Passing parameters separately (other dialects)
-export const sequelize = new Sequelize('eva', 'my_eva', 'admin_eva', {
+export const sequelize = new Sequelize('eva', 'my_eva', '@dmin_eva*', {
     host: 'localhost',
     dialect: 'mysql'
 });*/
@@ -15,3 +15,5 @@ export const sequelize = new Sequelize('eva', 'my_eva', '@dmin_eva*', {
     port: 5432, // Puerto predeterminado de PostgreSQL
     logging: false, // Opcional: desactiva los logs de SQL
 });
+
+export default sequelize;

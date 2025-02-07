@@ -1,5 +1,7 @@
+import { sequelize } from '../database/database.js'; // Asegúrate de que la ruta sea correcta
 import { Op } from 'sequelize'; // Asegúrate de importar los operadores de Sequelize
 import { Usuario } from "../models/Usuario.js";
+import { Matricula } from '../models/Matricula.js';
 import bcrypt from 'bcryptjs';
 
 export const getUser = async (req, res) => {
@@ -63,6 +65,54 @@ export const getUsersStudent = async (req, res) => {
             }
         });
         res.json(students);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+export const getEstudiantesNoMatriculados = async (req, res) => {
+    try {
+        const estudiantes = await Usuario.findAll({
+            where: {
+                cod_rol: 4, // Filtra solo los usuarios con rol de estudiante
+            },
+            include: [
+                {
+                    model: Matricula,
+                    where: {
+                        cod_estudiante: null, // Filtra los estudiantes no matriculados
+                    },
+                    required: false, // LEFT JOIN
+                },
+            ],
+            attributes: ["cod_usuario", "nombres", "apellidos"], // Selecciona solo el código de usuario
+        });
+
+        // Filtrar los resultados para obtener solo aquellos sin matrícula
+        const estudiantesNoMatriculados = estudiantes.filter(
+            (estudiante) => !estudiante.Matriculas || estudiante.Matriculas.length === 0
+        );
+
+        res.json(estudiantesNoMatriculados);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+export const getEstudiantesMatriculados = async (req, res) => {
+    try {
+        const estudiantes = await Usuario.findAll({
+            where: {
+                cod_rol: 4 // Filtra solo los usuarios con rol de estudiante
+            },
+            include: [{
+                model: Matricula,
+                required: true // INNER JOIN
+            }],
+            attributes: ['cod_usuario', 'nombres', 'apellidos'], // Selecciona solo el código de usuario
+        });
+
+        res.json(estudiantes);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }

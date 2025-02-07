@@ -9,34 +9,46 @@ import { Op } from 'sequelize';
  */
 export const createMatricula = async (req, res) => {
     try {
-        const { cod_periodo, cod_curso, cod_estudiante } = req.body;
+        const { cod_periodo, cod_curso, cod_estudiantes } = req.body;
 
-        // Verifica si la matrícula ya existe
-        const existingMatricula = await Matricula.findOne({
-            where: {
+        // Verifica si cod_estudiantes es un arreglo
+        if (!Array.isArray(cod_estudiantes)) {
+            return res.status(400).json({ message: 'cod_estudiantes debe ser un arreglo' });
+        }
+
+        const matriculasCreadas = [];
+
+        // Itera sobre cada estudiante
+        for (const cod_estudiante of cod_estudiantes) {
+            // Verifica si la matrícula ya existe
+            const existingMatricula = await Matricula.findOne({
+                where: {
+                    cod_periodo,
+                    cod_curso,
+                    cod_estudiante,
+                }
+            });
+
+            if (existingMatricula) {
+                return res.status(400).json({ message: `El estudiante con ID ${cod_estudiante} ya está matriculado` });
+            }
+
+            // Crea una nueva matrícula
+            const newMatricula = await Matricula.create({
                 cod_periodo,
                 cod_curso,
                 cod_estudiante,
-            }
-        });
+            });
 
-        if (existingMatricula) {
-            return res.status(400).json({ message: 'El estudiante ya está matriculado' });
+            matriculasCreadas.push(newMatricula);
         }
 
-        // Crea una nueva matrícula
-        const newMatricula = await Matricula.create({
-            cod_periodo,
-            cod_curso,
-            cod_estudiante,
-        });
-
-        return res.status(201).json(newMatricula);
+        return res.status(201).json(matriculasCreadas);
     } catch (error) {
-        return res.status(500).json({ message: 'Error al crear la matrícula', error: error.message });
+        console.error("Error al crear la matrícula:", error);
+        return res.status(500).json({ message: "Error al crear la matrícula", error: error.message });
     }
 };
-
 /**
  * Obtiene una matrícula por su código.
  * @param {Object} req - Objeto de solicitud HTTP.

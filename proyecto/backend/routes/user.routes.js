@@ -1,10 +1,14 @@
 import { Router } from "express"
-import { getUsersAdmin, getUsersTeacher, getUsersStudent, getUser, deleteUser, updateUser, updateUserPassword } from "../controllers/user.controller.js"
+import { getUsersAdmin, getUsersTeacher, getUsersStudent, getUser, deleteUser, updateUser, updateUserPassword, getEstudiantesNoMatriculados, getEstudiantesMatriculados } from "../controllers/user.controller.js"
 import { authRequired } from "../middlewares/auth.middleware.js"
 import { validateSchema } from "../middlewares/validator.middleware.js";
 import { editSchema, passwordSchema} from "../schemas/auth.schema.js";
 
 const router = Router();
+
+router.get("/estudiantes-no-matriculados", authRequired, getEstudiantesNoMatriculados)
+
+router.get("/estudiantes-matriculados", authRequired, getEstudiantesMatriculados)
 
 router.get("/admins", authRequired, getUsersAdmin);
 
