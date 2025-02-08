@@ -11,6 +11,7 @@ import {AsignarMateria} from "../components/AsignarMateria";
 import { RegisterPeriodo } from "../components/RegisterPeriodo";
 import EditPerfil from "../components/EditPerfil";
 import {MatricularEstudiante} from "../components/MatricularEstudiante";
+import DocenteMateria from "../components/DocenteMateria";
 
 const componentMap = {
   Dashboard: () => <Dashboard />,
@@ -20,6 +21,7 @@ const componentMap = {
   Docentes: () => <RegisterTeacher />, // Receive setErrors as a prop
   Cursos: () => <RegisterCurso />,
   "Asignar materias": () => <RegisterMateria />,
+  "Asignar docentes": () => <DocenteMateria/>,
   //"Asignar materias": () => <AsignarMateria />,
   Periodos: () => <RegisterPeriodo />,
   "Matricular estudiantes": () => <MatricularEstudiante/>,
