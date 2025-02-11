@@ -34,16 +34,15 @@ export function DocenteMateriaProvider({ children }) {
 
   const registerdocenteMateria = async (docente_materia) => {
     try {
-      console.log(docente_materia);
       const res = await registerdocenteMateriaRequest(docente_materia);
       if (res.status === 201) {
-        console.log(res);
-        //console.log("Usuario registrado exitosamente");
         return true; // Indicar éxito
       }
       return false; // Indicar fallo
     } catch (error) {
-      setErrors(error.response.data.errors || ["Error desconocido"]);
+      // Capturar el mensaje de error del backend
+      const errorMessage = error.response?.data?.message || "Error desconocido";
+      setErrors([errorMessage]); // Almacenar el mensaje en el estado de errores
       return false;
     }
   };

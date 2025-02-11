@@ -1,4 +1,3 @@
-// CustomToast.js
 import { toast, Bounce } from 'react-toastify';
 
 const CustomToast = (message, type = 'success') => {
@@ -9,7 +8,6 @@ const CustomToast = (message, type = 'success') => {
         closeOnClick: false,
         pauseOnHover: true,
         draggable: true,
-        progress: undefined,
         theme: "colored",
         transition: Bounce,
     };

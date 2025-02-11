@@ -37,10 +37,9 @@ export const createDocenteMateria = async (req, res) => {
             return res.status(404).json({ message: 'Una o más materias no existen.' });
         }
 
-        // Verificar si ya existen asignaciones activas para el docente y las materias
+        // Verificar si ya existen asignaciones activas para las materias en cualquier docente
         const existingAssignments = await DocenteMateria.findAll({
             where: {
-                cod_docente,
                 cod_materia: cod_materias,
                 activo: true
             }
@@ -49,7 +48,7 @@ export const createDocenteMateria = async (req, res) => {
         if (existingAssignments.length > 0) {
             const materiasAsignadas = existingAssignments.map(a => a.cod_materia);
             return res.status(400).json({
-                message: 'El docente ya está asignado a una o más materias.',
+                message: 'Una o más materias ya están asignadas a otro docente.',
                 materiasAsignadas
             });
         }
