@@ -57,6 +57,15 @@ export function MateriaProvider({ children }) {
     }
   };
 
+  const getMateriasCurso = async (cod_curso) => {
+    try {
+      const res = await getMateriasRequest(cod_curso);
+      return res.data;
+    } catch (error) {
+      console.error("Error fetching materias:", error);
+    }
+  };
+
   const getMaterias = async () => {
     try {
       const res = await getMateriasRequest();
@@ -65,6 +74,7 @@ export function MateriaProvider({ children }) {
       console.error("Error fetching materias:", error);
     }
   };
+
 
   const getMateria = async (cod_materia) => {
     try {
@@ -119,6 +129,7 @@ export function MateriaProvider({ children }) {
         getMateria,
         updateMateria,
         deleteMateria,
+        getMateriasCurso,
         errors,
       }}
     >

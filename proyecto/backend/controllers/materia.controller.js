@@ -4,6 +4,34 @@ import { Curso } from '../models/Curso.js';
 import { Materia } from "../models/Materia.js";
 import { Op } from 'sequelize';
 
+export const getMateriasCurso = async (req, res) => {
+    const { cod_curso } = req.params;
+
+    try {
+        // Realizar la consulta utilizando Sequelize
+        const materias = await Materia.findAll({
+            attributes: ['nombre_materia'], // Seleccionar solo el nombre de la materia
+            where: {
+                cod_curso: cod_curso // Filtrar por el código del curso
+            },
+            include: [{
+                model: Curso,
+                attributes: [] // No necesitamos atributos del curso en la respuesta
+            }]
+        });
+
+        // Verificar si se encontraron materias
+        if (materias.length === 0) {
+            return res.status(404).json({ message: 'No se encontraron materias para el curso especificado.' });
+        }
+
+        return res.status(200).json(materias);
+    } catch (error) {
+        console.error('Error al obtener las materias del curso:', error);
+        return res.status(500).json({ message: 'Error interno del servidor.' });
+    }
+};
+
 export const getCursos = async (req, res) => {
     try {
         const cursos = await Curso.findAll({

@@ -1,9 +1,6 @@
-/**
- * Controlador para manejar las asignaciones de docentes a materias.
- * @module controllers/DocenteMateriaController
- */
-
 import { DocenteMateria } from "../models/DocenteMateria.js";
+import { Usuario } from "../models/Usuario.js";
+import { Materia } from "../models/Materia.js";
 
 /**
  * Crea una nueva asignación de un docente a una materia.
@@ -12,32 +9,64 @@ import { DocenteMateria } from "../models/DocenteMateria.js";
  * @param {Object} res - Objeto de respuesta HTTP.
  * @returns {Object} - Respuesta con la asignación creada o un mensaje de error.
  */
+/**
+ * Crea una o varias asignaciones de un docente a materias.
+ * @function
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {Object} res - Objeto de respuesta HTTP.
+ * @returns {Object} - Respuesta con las asignaciones creadas o un mensaje de error.
+ */
 export const createDocenteMateria = async (req, res) => {
-    const { cod_docente, cod_materia } = req.body;
+    const { cod_docente, cod_materias } = req.body; // Ahora cod_materias es un array
 
     try {
-        // Verificar si ya existe una asignación activa para el docente y la materia
-        const existingAssignment = await DocenteMateria.findOne({
+        // Verificar si el docente existe
+        const docente = await Usuario.findByPk(cod_docente);
+        if (!docente) {
+            return res.status(404).json({ message: 'Docente no encontrado.' });
+        }
+
+        // Verificar si todas las materias existen
+        const materias = await Materia.findAll({
+            where: {
+                cod_materia: cod_materias
+            }
+        });
+
+        if (materias.length !== cod_materias.length) {
+            return res.status(404).json({ message: 'Una o más materias no existen.' });
+        }
+
+        // Verificar si ya existen asignaciones activas para el docente y las materias
+        const existingAssignments = await DocenteMateria.findAll({
             where: {
                 cod_docente,
-                cod_materia,
+                cod_materia: cod_materias,
                 activo: true
             }
         });
 
-        if (existingAssignment) {
-            return res.status(400).json({ message: 'El docente ya está asignado a esta materia.' });
+        if (existingAssignments.length > 0) {
+            const materiasAsignadas = existingAssignments.map(a => a.cod_materia);
+            return res.status(400).json({
+                message: 'El docente ya está asignado a una o más materias.',
+                materiasAsignadas
+            });
         }
 
-        // Crear la nueva asignación
-        const nuevaAsignacion = await DocenteMateria.create({
-            cod_docente,
-            cod_materia
-        });
+        // Crear las nuevas asignaciones
+        const nuevasAsignaciones = await Promise.all(
+            cod_materias.map(async (cod_materia) => {
+                return await DocenteMateria.create({
+                    cod_docente,
+                    cod_materia
+                });
+            })
+        );
 
-        return res.status(201).json(nuevaAsignacion);
+        return res.status(201).json(nuevasAsignaciones);
     } catch (error) {
-        console.error('Error al crear la asignación:', error);
+        console.error('Error al crear las asignaciones:', error);
         return res.status(500).json({ message: 'Error interno del servidor.' });
     }
 };
@@ -51,7 +80,17 @@ export const createDocenteMateria = async (req, res) => {
  */
 export const getDocentesMaterias = async (req, res) => {
     try {
-        const asignaciones = await DocenteMateria.findAll();
+        const { activo } = req.query;
+        const whereClause = activo !== undefined ? { activo: activo === 'true' } : {};
+
+        const asignaciones = await DocenteMateria.findAll({
+            where: whereClause,
+            include: [
+                { model: Usuario, as: 'docente' },
+                { model: Materia, as: 'materia' }
+            ]
+        });
+
         return res.status(200).json(asignaciones);
     } catch (error) {
         console.error('Error al obtener las asignaciones:', error);
@@ -70,7 +109,12 @@ export const getDocenteMateria = async (req, res) => {
     const { cod_asignacion } = req.params;
 
     try {
-        const asignacion = await DocenteMateria.findByPk(cod_asignacion);
+        const asignacion = await DocenteMateria.findByPk(cod_asignacion, {
+            include: [
+                { model: Usuario, as: 'docente' },
+                { model: Materia, as: 'materia' }
+            ]
+        });
 
         if (!asignacion) {
             return res.status(404).json({ message: 'Asignación no encontrada.' });
@@ -99,6 +143,21 @@ export const updateDocenteMateria = async (req, res) => {
 
         if (!asignacion) {
             return res.status(404).json({ message: 'Asignación no encontrada.' });
+        }
+
+        // Verificar si el docente y la materia existen
+        if (cod_docente) {
+            const docente = await Usuario.findByPk(cod_docente);
+            if (!docente) {
+                return res.status(404).json({ message: 'Docente no encontrado.' });
+            }
+        }
+
+        if (cod_materia) {
+            const materia = await Materia.findByPk(cod_materia);
+            if (!materia) {
+                return res.status(404).json({ message: 'Materia no encontrada.' });
+            }
         }
 
         // Actualizar los campos

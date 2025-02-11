@@ -1,37 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import DataTable from "react-data-table-component";
+import { useUser } from "../context/UserContext";
+import { useCurso } from "../context/CursoContext";
+import { useMateria } from "../context/MateriaContext";
+import { useDocenteMateria } from "../context/DocenteMateriaContext"; // Importar el contexto
 
 function DocenteMateria() {
-  // Estado para almacenar los datos seleccionados
+  // Estados para almacenar las selecciones
   const [docenteSeleccionado, setDocenteSeleccionado] = useState("");
   const [cursoSeleccionado, setCursoSeleccionado] = useState("");
   const [materiasSeleccionadas, setMateriasSeleccionadas] = useState([]);
 
-  // Datos de ejemplo (pueden ser reemplazados por datos reales)
-  const docentes = [
-    { id: 1, nombre: "Juan Pérez" },
-    { id: 2, nombre: "María Gómez" },
-    { id: 3, nombre: "Carlos López" },
-  ];
+  // Contextos para obtener datos
+  const { users, getUsersTeacher } = useUser();
+  const { cursos, getCursos } = useCurso();
+  const { getMateriasCurso } = useMateria();
+  const { registerdocenteMateria } = useDocenteMateria(); // Usar el contexto
 
-  const cursos = [
-    { id: 1, nombre: "Curso de Matemáticas" },
-    { id: 2, nombre: "Curso de Ciencias" },
-    { id: 3, nombre: "Curso de Historia" },
-  ];
+  // Estados para almacenar datos
+  const [docentes, setDocentes] = useState([]);
+  const [materias, setMaterias] = useState([]);
 
-  const materias = [
-    { id: 1, cursoId: 1, nombre: "Álgebra" },
-    { id: 2, cursoId: 1, nombre: "Geometría" },
-    { id: 3, cursoId: 2, nombre: "Biología" },
-    { id: 4, cursoId: 2, nombre: "Química" },
-    { id: 5, cursoId: 3, nombre: "Historia Antigua" },
-    { id: 6, cursoId: 3, nombre: "Historia Moderna" },
-  ];
+  // Obtener docentes (solo profesores) al cargar el componente
+  useEffect(() => {
+    getUsersTeacher();
+  }, []);
+
+  // Obtener cursos al cargar el componente
+  useEffect(() => {
+    getCursos();
+  }, []);
+
+  // Obtener materias cuando se selecciona un curso
+  useEffect(() => {
+    if (cursoSeleccionado) {
+      const fetchMaterias = async () => {
+        const materiasData = await getMateriasCurso(cursoSeleccionado);
+        setMaterias(materiasData);
+      };
+      fetchMaterias();
+    }
+  }, [cursoSeleccionado]);
 
   // Filtrar materias basadas en el curso seleccionado
   const materiasFiltradas = materias.filter(
-    (materia) => materia.cursoId === parseInt(cursoSeleccionado)
+    (materia) => materia.cod_curso === parseInt(cursoSeleccionado)
   );
 
   // Manejar la selección de materias
@@ -50,7 +63,44 @@ function DocenteMateria() {
     if (materiasSeleccionadas.length === materiasFiltradas.length) {
       setMateriasSeleccionadas([]);
     } else {
-      setMateriasSeleccionadas(materiasFiltradas.map((materia) => materia.id));
+      setMateriasSeleccionadas(
+        materiasFiltradas.map((materia) => materia.cod_materia)
+      );
+    }
+  };
+
+  // Manejar el envío del formulario
+  const handleAsignarMaterias = async () => {
+    if (
+      !docenteSeleccionado ||
+      !cursoSeleccionado ||
+      materiasSeleccionadas.length === 0
+    ) {
+      alert(
+        "Por favor, seleccione un docente, un curso y al menos una materia."
+      );
+      return;
+    }
+
+    try {
+      // Crear las asignaciones usando el contexto
+      const response = await registerdocenteMateria({
+        cod_docente: docenteSeleccionado,
+        cod_materias: materiasSeleccionadas,
+      });
+
+      if (response) {
+        alert("Asignación realizada con éxito.");
+        // Limpiar selecciones
+        setDocenteSeleccionado("");
+        setCursoSeleccionado("");
+        setMateriasSeleccionadas([]);
+      } else {
+        alert("Hubo un error al realizar la asignación.");
+      }
+    } catch (error) {
+      console.error("Error al asignar materias:", error);
+      alert("Hubo un error al realizar la asignación.");
     }
   };
 
@@ -61,15 +111,15 @@ function DocenteMateria() {
       cell: (row) => (
         <input
           type="checkbox"
-          checked={materiasSeleccionadas.includes(row.id)}
-          onChange={() => handleMateriaSeleccionada(row.id)}
+          checked={materiasSeleccionadas.includes(row.cod_materia)}
+          onChange={() => handleMateriaSeleccionada(row.cod_materia)}
         />
       ),
       width: "100px",
     },
     {
       name: "Materia",
-      selector: (row) => row.nombre,
+      selector: (row) => row.nombre_materia,
       sortable: true,
     },
   ];
@@ -92,9 +142,9 @@ function DocenteMateria() {
             onChange={(e) => setDocenteSeleccionado(e.target.value)}
           >
             <option value="">-- Seleccione un docente --</option>
-            {docentes.map((docente) => (
-              <option key={docente.id} value={docente.id}>
-                {docente.nombre}
+            {users.map((docente) => (
+              <option key={docente.cod_usuario} value={docente.cod_usuario}>
+                {docente.nombres} {docente.apellidos}
               </option>
             ))}
           </select>
@@ -112,8 +162,8 @@ function DocenteMateria() {
           >
             <option value="">-- Seleccione un curso --</option>
             {cursos.map((curso) => (
-              <option key={curso.id} value={curso.id}>
-                {curso.nombre}
+              <option key={curso.cod_curso} value={curso.cod_curso}>
+                {curso.nombre_curso}
               </option>
             ))}
           </select>
@@ -145,7 +195,7 @@ function DocenteMateria() {
                 highlightOnHover
                 pointerOnHover
                 noDataComponent="No hay materias disponibles"
-                defaultSortField="nombre"
+                defaultSortField="nombre_materia"
                 defaultSortAsc
                 paginationComponentOptions={{
                   rowsPerPageText: "Filas por página:",
@@ -156,9 +206,9 @@ function DocenteMateria() {
           </div>
         )}
 
-        {/* Botón de Asignación (sin funcionalidad) */}
+        {/* Botón de Asignación */}
         <button
-          onClick={() => alert("Asignación realizada (sin funcionalidad)")}
+          onClick={handleAsignarMaterias}
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
         >
           Asignar Materias

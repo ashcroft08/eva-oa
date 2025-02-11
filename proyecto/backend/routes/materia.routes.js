@@ -6,7 +6,8 @@ import {
     updateMateria,
     deleteMateria,
     getMateria,
-    getCursos
+    getCursos,
+    getMateriasCurso
 } from '../controllers/materia.controller.js';
 import { authRequired } from "../middlewares/auth.middleware.js"
 import { validateSchema } from "../middlewares/validator.middleware.js";
@@ -14,6 +15,7 @@ import { materiaSchema } from "../schemas/materia.schema.js";
 
 const router = Router();
 
+router.get("/materias/:cod_curso", authRequired, getMateriasCurso)
 router.get("/cursos/materias", authRequired, getCursos)
 router.get('/materias', authRequired, getMaterias);
 router.post('/register-materia', authRequired, validateSchema(materiaSchema), createMateria);

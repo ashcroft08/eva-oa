@@ -7,7 +7,7 @@ import { updateDocenteMateriaSchema } from "../schemas/DocenteMateria.schema.js"
 
 const router = Router();
 
-router.post("/asignar-docente", authRequired, validateSchema(createDocenteMateriaSchema), createDocenteMateria);
+router.post("/asignar-docente", authRequired, createDocenteMateria);
 
 router.get("/asignar-docente", authRequired, getDocentesMaterias);
 

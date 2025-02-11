@@ -1,5 +1,7 @@
 import axios from "./axios";
 
+export const getMateriasCursoRequest = (cod_curso) => axios.get(`/materias/${cod_curso}`);
+
 export const getCursosMateriasRequest = () => axios.get("/cursos/materias");
 
 export const registerMateriaRequest = materia => axios.post("/register-materia", materia)
