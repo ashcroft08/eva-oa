@@ -11,7 +11,8 @@ import cursoRoutes from "./routes/curso.routes.js"
 import materiaRoutes from './routes/materia.routes.js';
 import periodoRoutes from './routes/periodo.routes.js';
 import matriculaRoutes from './routes/matricula.routes.js';
-import docenteMateriaRoutes from './routes/docentemateria.routes.js'
+import docenteMateriaRoutes from './routes/docentemateria.routes.js';
+import dashboardRoutes from "./routes/dashboard.routes.js";
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use("/api", materiaRoutes);
 app.use("/api", periodoRoutes);
 app.use("/api", matriculaRoutes);
 app.use("/api", docenteMateriaRoutes);
+app.use("/api", dashboardRoutes);
 
 //app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
