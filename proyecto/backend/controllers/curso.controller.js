@@ -1,4 +1,8 @@
-import { Curso } from "../models/Curso.js";
+import { Matricula } from '../models/Matricula.js';
+import { Curso } from '../models/Curso.js';
+import { Materia } from '../models/Materia.js';
+import { DocenteMateria } from '../models/DocenteMateria.js';
+import { Usuario } from '../models/Usuario.js';
 import { Op } from 'sequelize';
 
 export const getCursos = async (req, res) => {
@@ -114,5 +118,94 @@ export const getCurso = async (req, res) => {
             message: 'Error interno del servidor',
             error: error.message // Muestra el error real
         });
+    }
+};
+
+// Controlador para obtener los nombres de los cursos y sus materias por cod_docente
+export const obtenerCursosPorDocente = async (req, res) => {
+    const { cod_docente } = req.params; // Suponiendo que el cod_docente se pasa como parámetro en la URL
+
+    try {
+        const cursos = await Curso.findAll({
+            attributes: ['nombre_curso'], // Solo queremos el nombre del curso
+            include: [
+                {
+                    model: Materia,
+                    required: true, // INNER JOIN
+                    attributes: ['nombre_materia'], // Solo queremos el nombre de la materia
+                    include: [
+                        {
+                            model: DocenteMateria,
+                            required: true, // INNER JOIN
+                            where: { cod_docente: cod_docente }, // Filtramos por cod_docente
+                            attributes: [] // No necesitamos atributos de DocenteMateria
+                        }
+                    ]
+                }
+            ]
+        });
+
+        // Verificamos si se encontraron cursos
+        if (cursos.length === 0) {
+            return res.status(404).json({ message: 'No se encontraron cursos para el docente especificado.' });
+        }
+
+        // Mapeamos los resultados para obtener solo el nombre del curso y los nombres de las materias
+        const resultado = cursos.map(curso => ({
+            nombre_curso: curso.nombre_curso,
+            materias: curso.Materia.map(materia => materia.nombre_materia) // Extraemos solo el nombre de la materia
+        }));
+
+        // Devolvemos los cursos encontrados
+        return res.status(200).json(resultado);
+    } catch (error) {
+        console.error('Error al obtener los cursos:', error);
+        return res.status(500).json({ message: 'Error interno del servidor.' });
+    }
+};
+
+export const obtenerEstudiantesPorDocente = async (req, res) => {
+    const { cod_docente } = req.params; // Obtén el código del docente desde los parámetros de la ruta
+
+    try {
+        const estudiantes = await Usuario.findAll({
+            attributes: ['nombres', 'apellidos'],
+            include: [
+                {
+                    model: Matricula,
+                    required: true, // Filtra solo los estudiantes que tienen matrícula
+                    include: [
+                        {
+                            model: Curso,
+                            required: true, // Filtra solo los cursos relacionados
+                            include: [
+                                {
+                                    model: Materia,
+                                    required: true, // Filtra solo las materias relacionadas
+                                    include: [
+                                        {
+                                            model: DocenteMateria,
+                                            where: { cod_docente: cod_docente }, // Filtra por el código del docente
+                                            required: true, // Filtra solo las asignaciones de docente
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+            distinct: true, // Evita duplicados
+        });
+
+        const nombresApellidos = estudiantes.map(estudiante => ({
+            nombres: estudiante.nombres,
+            apellidos: estudiante.apellidos,
+        }));
+
+        res.status(200).json(nombresApellidos);
+    } catch (error) {
+        console.error('Error al obtener los nombres y apellidos de los estudiantes:', error);
+        res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
 };

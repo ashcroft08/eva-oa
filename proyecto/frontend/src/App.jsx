@@ -20,6 +20,7 @@ import { MateriaProvider } from "./context/MateriaContext";
 import { MatriculaProvider } from "./context/MatriculaContext";
 import { DocenteMateriaProvider } from "./context/DocenteMateriaContext";
 import { DashboardProvider } from "./context/DashboardContext";
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (
@@ -42,7 +43,7 @@ function App() {
                                 path="/"
                                 element={
                                   <PublicRoute>
-                                    <h1>Home Page</h1>
+                                    <HomePage />
                                   </PublicRoute>
                                 }
                               />
