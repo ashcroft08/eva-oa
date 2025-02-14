@@ -8,6 +8,7 @@ import './models/RecoverPassword.js';
 import './models/Rol.js';
 import './models/Curso.js';
 import './models/Materia.js';
+import './models/DocenteMateria.js'
 import './models/Periodo.js'
 import './models/Matricula.js';
 import './models/ObjetoAprendizaje.js';

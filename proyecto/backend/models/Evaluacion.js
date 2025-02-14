@@ -17,7 +17,7 @@ export const Evaluacion = sequelize.define('Evaluacion', {
             key: 'cod_materia',
         },
     },
-    cod_profesor: {  // Nombre más descriptivo (FK a usuario con rol profesor)
+    cod_docente: {  // Nombre más descriptivo (FK a usuario con rol profesor)
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {

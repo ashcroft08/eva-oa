@@ -102,13 +102,13 @@ function EditPerfil() {
         {/* Sección Información del Perfil */}
         <CCard className="mb-6">
           <CCardBody>
-          {registerErrors.length > 0 && (
-                <div className="bg-red-500 p-2 text-white mb-4 rounded">
-                  {registerErrors.map((error, i) => (
-                    <p key={i}>{error}</p>
-                  ))}
-                </div>
-              )}
+            {registerErrors.length > 0 && (
+              <div className="bg-red-500 p-2 text-white mb-4 rounded">
+                {registerErrors.map((error, i) => (
+                  <p key={i}>{error}</p>
+                ))}
+              </div>
+            )}
             <div className="space-y-4">
               <div>
                 <CCardTitle className="text-base md:text-lg font-semibold">
@@ -172,7 +172,9 @@ function EditPerfil() {
                     />
                     {editErrors.nombres && (
                       <p className="mt-1 text-red-600">
-                        {editErrors.nombres.message}
+                        <p className="text-red-500">
+                          Los nombres son obligatorios
+                        </p>
                       </p>
                     )}
                   </div>
@@ -188,7 +190,9 @@ function EditPerfil() {
                     />
                     {editErrors.apellidos && (
                       <p className="mt-1 text-red-600">
-                        {editErrors.apellidos.message}
+                        <p className="text-red-500">
+                          Los apellidos son obligatorios
+                        </p>
                       </p>
                     )}
                   </div>

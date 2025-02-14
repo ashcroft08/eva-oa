@@ -1,5 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import {
+  getEstudiantesMatriculadosRequest,
+  getEstudiantesNoMatriculadosRequest,
   getUsersAdminRequest,
   getUsersTeacherRequest,
   getUsersStudentRequest,
@@ -107,10 +109,30 @@ export function UserProvider({ children }) {
     }
   };
 
+  const getEstudiantesNoMatriculados = async () => {
+    try {
+      const res = await getEstudiantesNoMatriculadosRequest(); // Corregido
+      setUsers(res.data);
+    } catch (error) {
+      console.error("Error fetching student users no matriculados:", error);
+    }
+  };
+
+  const getEstudiantesMatriculados = async () => {
+    try {
+      const res = await getEstudiantesMatriculadosRequest();
+      setUsers(res.data);
+    } catch (error) {
+      console.error("Error fetching student users matriculados:", error);
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
         users,
+        getEstudiantesNoMatriculados,
+        getEstudiantesMatriculados,
         getUsersAdmin,
         getUsersTeacher,
         getUsersStudent,

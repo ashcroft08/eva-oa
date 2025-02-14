@@ -199,6 +199,7 @@ export const RegisterAdmin = () => {
     const query = event.target.value.toLowerCase();
     const newData = users.filter((row) => {
       return (
+        row.cedula.includes(query) ||
         row.nombres.toLowerCase().includes(query) ||
         row.apellidos.toLowerCase().includes(query) ||
         row.email.toLowerCase().includes(query)
@@ -425,15 +426,11 @@ export const RegisterAdmin = () => {
                 <input
                   type="text"
                   id="cedula"
-                  {...registerEdit("cedula")}
-                  className={`block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 ${
-                    editErrors.cedula ? "border-red-500" : "border-gray-300"
-                  }`}
+                  {...registerEdit("cedula", { required: true })}
+                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
                 />
                 {editErrors.cedula && (
-                  <p className="mt-1 text-red-600">
-                    {editErrors.cedula.message}
-                  </p>
+                  <p className="text-red-500">La cédula es obligatoria</p>
                 )}
               </div>
 

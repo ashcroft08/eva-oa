@@ -1,5 +1,7 @@
+import { sequelize } from '../database/database.js'; // Asegúrate de que la ruta sea correcta
 import { Op } from 'sequelize'; // Asegúrate de importar los operadores de Sequelize
 import { Usuario } from "../models/Usuario.js";
+import { Matricula } from '../models/Matricula.js';
 import bcrypt from 'bcryptjs';
 
 export const getUser = async (req, res) => {
@@ -31,7 +33,8 @@ export const getUsersAdmin = async (req, res) => {
                 cod_usuario: {
                     [Op.ne]: userId // Excluir al usuario logueado
                 }
-            }
+            },
+            order: [['cod_usuario', 'ASC']]
         });
 
         // Devuelve los usuarios encontrados en formato JSON
@@ -47,7 +50,8 @@ export const getUsersTeacher = async (req, res) => {
         const teachers = await Usuario.findAll({
             where: {
                 cod_rol: 3
-            }
+            },
+            order: [['cod_usuario', 'ASC']]
         });
         res.json(teachers);
     } catch (error) {
@@ -60,9 +64,57 @@ export const getUsersStudent = async (req, res) => {
         const students = await Usuario.findAll({
             where: {
                 cod_rol: 4
-            }
+            },
+            order: [['cod_usuario', 'ASC']]
         });
         res.json(students);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+export const getEstudiantesNoMatriculados = async (req, res) => {
+    try {
+        // Obtener todos los estudiantes
+        const estudiantes = await Usuario.findAll({
+            where: {
+                cod_rol: 4
+            }
+        });
+
+        // Obtener los estudiantes que están matriculados en cualquier curso
+        const estudiantesMatriculados = await Matricula.findAll({
+            attributes: ['cod_estudiante']
+        });
+
+        // Extraer los IDs de los estudiantes matriculados
+        const codEstudiantesMatriculados = estudiantesMatriculados.map(m => m.cod_estudiante);
+
+        // Filtrar los estudiantes que no están matriculados en ningún curso
+        const estudiantesNoMatriculados = estudiantes.filter(estudiante =>
+            !codEstudiantesMatriculados.includes(estudiante.cod_usuario)
+        );
+
+        return res.status(200).json(estudiantesNoMatriculados);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error al obtener estudiantes no matriculados', error: error.message });
+    }
+};
+
+export const getEstudiantesMatriculados = async (req, res) => {
+    try {
+        const estudiantes = await Usuario.findAll({
+            where: {
+                cod_rol: 4 // Filtra solo los usuarios con rol de estudiante
+            },
+            include: [{
+                model: Matricula,
+                required: true // INNER JOIN
+            }],
+            attributes: ['cod_usuario', 'nombres', 'apellidos'], // Selecciona solo el código de usuario
+        });
+
+        res.json(estudiantes);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }

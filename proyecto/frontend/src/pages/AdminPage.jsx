@@ -7,7 +7,11 @@ import { RegisterTeacher } from "../components/RegisterTeacher";
 import { RegisterCurso } from "../components/RegisterCurso";
 import { RegisterInstitucion } from "../components/RegisterInstitucion";
 import { RegisterMateria } from "../components/RegisterMateria";
+import {AsignarMateria} from "../components/AsignarMateria";
+import { RegisterPeriodo } from "../components/RegisterPeriodo";
 import EditPerfil from "../components/EditPerfil";
+import {MatricularEstudiante} from "../components/MatricularEstudiante";
+import DocenteMateria from "../components/DocenteMateria";
 
 const componentMap = {
   Dashboard: () => <Dashboard />,
@@ -17,6 +21,10 @@ const componentMap = {
   Docentes: () => <RegisterTeacher />, // Receive setErrors as a prop
   Cursos: () => <RegisterCurso />,
   "Asignar materias": () => <RegisterMateria />,
+  "Asignar docentes": () => <DocenteMateria/>,
+  //"Asignar materias": () => <AsignarMateria />,
+  Periodos: () => <RegisterPeriodo />,
+  "Matricular estudiantes": () => <MatricularEstudiante/>,
   Perfil: () => <EditPerfil />,
   "/": () => <div>Logout</div>,
 };
@@ -34,7 +42,7 @@ function AdminPage() {
   return (
     <div className="flex">
       <RetractingSideBar setComponent={setComponent} />
-      <div className="flex-grow p-4">{renderComponent()}</div>
+      <div className="flex-grow p-4 bg-gray-100 min-h-screen">{renderComponent()}</div>
     </div>
   );
 }

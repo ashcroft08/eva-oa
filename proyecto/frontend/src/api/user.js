@@ -1,5 +1,9 @@
 import axios from "./axios";
 
+export const getEstudiantesNoMatriculadosRequest = () => axios.get("/estudiantes-no-matriculados");
+
+export const getEstudiantesMatriculadosRequest = () => axios.get("/estudiantes-matriculados");
+
 export const getUsersAdminRequest = () => axios.get("/admins");
 
 export const getUsersTeacherRequest = () => axios.get("/teachers");

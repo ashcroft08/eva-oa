@@ -43,8 +43,10 @@ export function MateriaProvider({ children }) {
 
   const registerMateria = async (materia) => {
     try {
+      console.log(materia);
       const res = await registerMateriaRequest(materia);
       if (res.status === 201) {
+        console.log(res);
         //console.log("Usuario registrado exitosamente");
         return true; // Indicar éxito
       }
@@ -52,6 +54,15 @@ export function MateriaProvider({ children }) {
     } catch (error) {
       setErrors(error.response.data.errors || ["Error desconocido"]);
       return false;
+    }
+  };
+
+  const getMateriasCurso = async (cod_curso) => {
+    try {
+      const res = await getMateriasRequest(cod_curso);
+      return res.data;
+    } catch (error) {
+      console.error("Error fetching materias:", error);
     }
   };
 
@@ -63,6 +74,7 @@ export function MateriaProvider({ children }) {
       console.error("Error fetching materias:", error);
     }
   };
+
 
   const getMateria = async (cod_materia) => {
     try {
@@ -117,6 +129,7 @@ export function MateriaProvider({ children }) {
         getMateria,
         updateMateria,
         deleteMateria,
+        getMateriasCurso,
         errors,
       }}
     >

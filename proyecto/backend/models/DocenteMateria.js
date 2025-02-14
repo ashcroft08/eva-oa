@@ -1,13 +1,13 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/database.js';
 
-export const ProfesorMateria = sequelize.define('ProfesorMateria', {
+export const DocenteMateria = sequelize.define('DocenteMateria', {
     cod_asignacion: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },
-    cod_profesor: {
+    cod_docente: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -32,12 +32,12 @@ export const ProfesorMateria = sequelize.define('ProfesorMateria', {
         defaultValue: true // Para "despedirlos" sin borrar registros
     }
 }, {
-    tableName: 'profesor_materia',
+    tableName: 'docente_materia',
     timestamps: true,
     indexes: [
         {
             unique: true,
-            fields: ['cod_profesor', 'cod_materia'] // Evita duplicados activos
+            fields: ['cod_docente', 'cod_materia'] // Evita duplicados activos
         }
     ]
 });

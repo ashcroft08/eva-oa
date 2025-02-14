@@ -14,7 +14,7 @@ import { MensajeWiki } from './MensajeWiki.js';
 import { Progreso } from './Progreso.js';
 import { Resultado } from './Resultado.js';
 import { RealizacionObjetoAprendizaje } from './RealizacionObjetoAprendizaje.js';
-import { ProfesorMateria } from "./ProfesorMateria.js"
+import { DocenteMateria } from "./DocenteMateria.js"
 import bcrypt from 'bcrypt'; // Asegúrate de instalar bcrypt
 
 export const Usuario = sequelize.define('Usuario', {
@@ -71,13 +71,10 @@ export const Usuario = sequelize.define('Usuario', {
 });
 
 // Relaciones
-Usuario.hasMany(Matricula, { foreignKey: 'cod_usuario' });
-Matricula.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
+Usuario.hasMany(Matricula, { foreignKey: 'cod_estudiante' }); 
+Matricula.belongsTo(Usuario, { foreignKey: 'cod_estudiante' });  // ✅ AHORA COINCIDE
 
-ProfesorMateria.belongsTo(Usuario, { foreignKey: 'cod_profesor' });
-
-Usuario.hasMany(Materia, { foreignKey: 'cod_usuario' });
-Materia.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
+DocenteMateria.belongsTo(Usuario, { foreignKey: 'cod_docente' });
 
 Usuario.hasMany(ObjetoAprendizaje, { foreignKey: 'cod_usuario' });
 ObjetoAprendizaje.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
@@ -91,8 +88,8 @@ Foro.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
 Usuario.hasMany(MensajeForo, { foreignKey: 'cod_usuario' });
 MensajeForo.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
 
-Usuario.hasMany(Evaluacion, { foreignKey: 'cod_usuario' });
-Evaluacion.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
+Usuario.hasMany(Evaluacion, { foreignKey: 'cod_docente' });
+Evaluacion.belongsTo(Usuario, { foreignKey: 'cod_docente' });
 
 Usuario.hasMany(EntregaTarea, { foreignKey: 'cod_usuario' });
 EntregaTarea.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
@@ -103,14 +100,14 @@ Wiki.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
 Usuario.hasMany(MensajeWiki, { foreignKey: 'cod_usuario' });
 MensajeWiki.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
 
-Usuario.hasMany(Progreso, { foreignKey: 'cod_usuario' });
-Progreso.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
+Usuario.hasMany(Progreso, { foreignKey: 'cod_estudiante' });
+Progreso.belongsTo(Usuario, { foreignKey: 'cod_estudiante' });
 
-Usuario.hasMany(Resultado, { foreignKey: 'cod_usuario' });
-Resultado.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
+Usuario.hasMany(Resultado, { foreignKey: 'cod_estudiante' });
+Resultado.belongsTo(Usuario, { foreignKey: 'cod_estudiante' });
 
-Usuario.hasMany(RealizacionObjetoAprendizaje, { foreignKey: 'cod_usuario' });
-RealizacionObjetoAprendizaje.belongsTo(Usuario, { foreignKey: 'cod_usuario' });
+Usuario.hasMany(RealizacionObjetoAprendizaje, { foreignKey: 'cod_estudiante' });
+RealizacionObjetoAprendizaje.belongsTo(Usuario, { foreignKey: 'cod_estudiante' });
 
 // Hook para crear un superusuario inicial (si no existe)
 Usuario.afterSync(async () => {

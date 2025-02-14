@@ -13,6 +13,7 @@ import { useAuth } from "../context/AuthContext";
 import { GiTeacher } from "react-icons/gi";
 import { LuCalendarClock } from "react-icons/lu";
 import { BiSolidInstitution } from "react-icons/bi";
+import { BsCaretDownFill } from "react-icons/bs"; // Importar el icono de Bootstrap
 
 const RetractingSideBar = ({ setComponent }) => {
   const [open, setOpen] = useState(true);
@@ -29,12 +30,17 @@ const RetractingSideBar = ({ setComponent }) => {
   return (
     <motion.nav
       layout
-      className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-white p-2"
+      className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-white p-2 overflow-visible" // Añade overflow-visible aquí
       style={{
         width: open ? "225px" : "fit-content",
       }}
     >
-      <TitleSection open={open} user={user} />
+      <TitleSection
+        open={open}
+        user={user}
+        logout={logout}
+        setSelected={handleComponentChange}
+      />
 
       <div className="space-y-1">
         <Option
@@ -109,7 +115,7 @@ const RetractingSideBar = ({ setComponent }) => {
         />
       </div>
 
-      {/* Aquí es donde añades un espacio entre las opciones */}
+      {/* Aquí es donde añades un espacio entre las opciones 
       <div className="mt-4 md:mt-20 px-2 pb-4 space-y-2 md:space-y-1">
         <Option
           Icon={CgProfile}
@@ -128,7 +134,7 @@ const RetractingSideBar = ({ setComponent }) => {
           to="/"
           onClick={() => logout()}
         />
-      </div>
+      </div>*/}
 
       <ToggleClose open={open} setOpen={setOpen} />
     </motion.nav>
@@ -214,10 +220,24 @@ const Option = ({
   );
 };
 
-const TitleSection = ({ open, user }) => {
+const TitleSection = ({ open, user, logout, setSelected }) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false); // Estado para controlar el dropdown
+
+  const handleProfileClick = () => {
+    setSelected("Perfil"); // Marca "Perfil" como seleccionado
+    setDropdownOpen(false); // Cierra el dropdown
+  };
+
+  const toggleDropdown = () => {
+    setDropdownOpen((prev) => !prev); // Alterna el estado del dropdown
+  };
+
   return (
     <div className="mb-3 border-b border-slate-300 pb-3">
-      <div className="flex cursor-pointer items-center justify-between rounded-md transition-colors hover:bg-slate-100">
+      <div
+        className="flex cursor-pointer items-center justify-between rounded-md transition-colors hover:bg-slate-100"
+        onClick={toggleDropdown} // Agregar el evento onClick aquí
+      >
         <div className="flex items-center gap-2">
           <Logo />
           {open && (
@@ -237,6 +257,36 @@ const TitleSection = ({ open, user }) => {
             </motion.div>
           )}
         </div>
+        {open && (
+          <div className="relative">
+            <button
+              onClick={toggleDropdown}
+              className="flex items-center text-slate-500 hover:text-slate-700"
+            >
+              <BsCaretDownFill className="text-sm" />
+            </button>
+            {dropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg border border-slate-200 z-50" // Añade z-50 aquí
+              >
+                <button
+                  onClick={handleProfileClick}
+                  className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                >
+                  <CgProfile className="inline-block mr-2" /> Perfil
+                </button>
+                <button
+                  onClick={logout}
+                  className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                >
+                  <IoIosLogOut className="inline-block mr-2" /> Cerrar Sesión
+                </button>
+              </motion.div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
