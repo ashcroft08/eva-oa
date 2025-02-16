@@ -13,6 +13,7 @@ import periodoRoutes from './routes/periodo.routes.js';
 import matriculaRoutes from './routes/matricula.routes.js';
 import docenteMateriaRoutes from './routes/docentemateria.routes.js';
 import dashboardRoutes from "./routes/dashboard.routes.js";
+import tokenRoutes from "./routes/token.routes.js"
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use("/api", periodoRoutes);
 app.use("/api", matriculaRoutes);
 app.use("/api", docenteMateriaRoutes);
 app.use("/api", dashboardRoutes);
+app.use("/api", tokenRoutes);
 
 //app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 

@@ -3,7 +3,8 @@ import { sequelize } from './database/database.js';
 import { setupAssociations } from './associations.js';
 
 // Importa todos los modelos
-/*import './models/Usuario.js';
+/*import './models/ConfiguracionToken.js'
+import './models/Usuario.js';
 import './models/RecoverPassword.js';
 import './models/Rol.js';
 import './models/Curso.js';

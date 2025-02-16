@@ -126,8 +126,8 @@ Usuario.afterSync(async () => {
                 email: 'admin@gmail.com',
                 password: await bcrypt.hash('Admin08_*', 10), // Encriptar la contraseña
             });
-
-            console.log('Superusuario creado:', usuario.toJSON());
+            
+            console.log('Superusuario insertado exitosamente');
         } else {
             console.log('Superusuario ya existe. No se realizaron cambios.');
         }

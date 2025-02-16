@@ -96,20 +96,26 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
+        console.log('Iniciando proceso de login para:', email);
+
         // Buscar usuario por email
         const userFound = await Usuario.findOne({ where: { email } });
         if (!userFound) {
+            console.log('Usuario no encontrado:', email);
             return res.status(400).json({ message: "Usuario no encontrado" });
         }
 
+        console.log('Usuario encontrado:', userFound.cod_usuario);
+
         // Verificar si la cuenta está bloqueada
         if (userFound.is_locked) {
-            const lockDuration = 15 * 60 * 1000; // 5 minutos en milisegundos
+            const lockDuration = 15 * 60 * 1000; // 15 minutos en milisegundos
             const currentTime = new Date();
             const lockTime = new Date(userFound.lock_time);
 
-            // Verificar si han pasado 5 minutos desde el bloqueo
+            // Verificar si han pasado 15 minutos desde el bloqueo
             if (currentTime - lockTime < lockDuration) {
+                console.log('Cuenta bloqueada para:', email);
                 return res.status(403).json({ message: "Cuenta bloqueada. Intenta de nuevo más tarde." });
             } else {
                 // Restablecer el estado de bloqueo
@@ -117,6 +123,7 @@ export const login = async (req, res) => {
                 userFound.login_attempts = 0;
                 userFound.lock_time = null;
                 await userFound.save();
+                console.log('Cuenta desbloqueada para:', email);
             }
         }
 
@@ -125,13 +132,14 @@ export const login = async (req, res) => {
         if (!isMatch) {
             userFound.login_attempts += 1; // Incrementar intentos fallidos
 
-            // Verificar si se alcanzaron los 3 intentos
+            // Verificar si se alcanzaron los 5 intentos
             if (userFound.login_attempts >= 5) {
                 userFound.is_locked = true; // Bloquear cuenta
                 userFound.lock_time = new Date(); // Establecer tiempo de bloqueo
             }
 
             await userFound.save(); // Guardar cambios en la base de datos
+            console.log('Contraseña incorrecta para:', email);
             return res.status(400).json({ message: "Contraseña incorrecta. Intentos restantes: " + (5 - userFound.login_attempts) });
         }
 
@@ -140,9 +148,11 @@ export const login = async (req, res) => {
         userFound.is_locked = false;
         userFound.lock_time = null;
         await userFound.save();
+        console.log('Contraseña correcta para:', email);
 
         // Generar token
         const token = await createAccessToken({ cod_usuario: userFound.cod_usuario });
+        console.log('Token generado para:', email);
 
         // Configurar cookie
         res.cookie("token", token);
@@ -159,6 +169,7 @@ export const login = async (req, res) => {
             updatedAt: userFound.updatedAt,
         });
     } catch (error) {
+        console.error('Error en el proceso de login:', error);
         res.status(500).json({ message: error.message });
     }
 };
